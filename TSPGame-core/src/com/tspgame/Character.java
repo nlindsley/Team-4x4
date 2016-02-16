@@ -11,6 +11,7 @@ public class Character {
 	double gravity;
 	boolean alive = true;
 	boolean isBullet;
+	int lives = 3;
 	
 	public Character(TSPGame game, int x, int y) {
 		this.x = x;
@@ -37,9 +38,9 @@ public class Character {
 	
 	/** Called hundreds of times per second, updates movement speed. */
 	public void update() {
+		x += xVelocity;
 		yVelocity -= gravity;
 		y += yVelocity;
-		x += xVelocity;
 		
 		for(int i = 0; i < game.blockArr.size(); i += 1) {
 			if(game.blockArr.get(i).isCollidingWith(this)) {
@@ -53,10 +54,20 @@ public class Character {
 				}
 			}
 		}
-		if(y <= 0) {	// stops us from falling through the floor
-			y = 0;
+		if(y <= 0 && (!isBullet)) {	// stops us from falling through the floor, prevents bullets from respawning
+			lives -= 1;
+			x = 100;	// move the player off the ground if touched
+			y = 200;
+			
 			yVelocity = 0.0;
 			// velocity = -velocity; // causes the player to bounce
+		}
+		
+		for(int i = 0; i < game.items.size(); i += 1) {
+			if(this.isCollidingWith(game.items.get(i))) {
+				game.ammo += 5;
+				game.items.get(i).alive = false;
+			}
 		}
 	}
 	

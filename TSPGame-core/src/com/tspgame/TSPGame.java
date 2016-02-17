@@ -2,30 +2,30 @@ package com.tspgame;
 
 import java.io.*;
 import java.util.*;
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+/** 
+ * Team 4x4, CS3141-Team Software Project, Spring 2016, Video Game
+ * 
+ * @author Alexander Friebe
+ * @author Charles Heckel
+ * @author Nick Lindsley
+ * @author Ben McWethy
+ */
 public class TSPGame extends ApplicationAdapter {
 	SpriteBatch 	batch;
-	Texture 		playerSprite;
-	Texture 		bullet;
-	Texture 		block;
-	Texture 		enemySprite;
-	Texture 		overlay;
-	Texture			ammoPack;
-	Character 		player;
-	Character 		enemy;
-	List<Character>	bullets		= new ArrayList<Character>(); 	// of type character because they have the same traits
-	List<Character>	blockArr	= new ArrayList<Character>();	// an array list allows for multiple on screen
-	List<Character>	items		= new ArrayList<Character>();	// list of active items
+	Player			player;
+	Player			enemy;
+	List<Bullet>	bullets		= new ArrayList<Bullet>(); 	// of type character because they have the same traits
+	List<Block>		blockArr	= new ArrayList<Block>();	// an array list allows for multiple on screen
+	List<Item>		items		= new ArrayList<Item>();	// list of active items
 	Listener		keyBoardListener;
-	int ammo = 10;
+	int ammo = 13;
 	BitmapFont font;	// pre-made font for libgdx
 
 	/** loads the level based on a file input of 0's (air), 1's (blocks), and x's(spawns). */
@@ -39,10 +39,10 @@ public class TSPGame extends ApplicationAdapter {
 			while(in.hasNextLine()) {
 				String line = in.nextLine();
 				String[] levelGrid = line.split(" ");	// puts everything inbetween whitespaces into an array spot
-				
+
 				for(int i = 0; i < levelGrid.length; i += 1) {
 					if(levelGrid[i].equals("1")) {
-						Character block = new Character(this, i*32, blockHeight*32);
+						Block block = new Block(this, i*32, blockHeight*32);
 						blockArr.add(block);
 					}
 				}
@@ -50,34 +50,23 @@ public class TSPGame extends ApplicationAdapter {
 			}
 			in.close();
 		} catch (FileNotFoundException e) {
-			System.out.println("\n\nCUSTOM ERROR: NEEDS A LEVEL FILE\nSave level file to assets folder of platform that is running it (Desktop/Android)\n\n");
+			System.out.println("CUSTOM ERROR: NEEDS A LEVEL FILE");
 			e.printStackTrace();
 		}
 	}
-	
+
 	/** Initialize all variables when game starts. */
 	@Override
 	public void create () {
 		loadLevel();
-		
-		batch 			= new SpriteBatch();
-		playerSprite 	= new Texture("player.png");	// image should be size 2^n
-		enemySprite 	= new Texture("player.png");
-		bullet 			= new Texture("bullet.png");
-		block 			= new Texture("block.png");
-		overlay 		= new Texture("overlay.png");
-		ammoPack		= new Texture("ammo.png");
-		font			= new BitmapFont();	// default 15pt arial from libgdx JAR file
-		
-		
-		player = new Character(this,100,200);	// default screen size= (640,480)
-		enemy = new Character(this,540,200);
-		
+
+		batch	= new SpriteBatch();
+		font	= new BitmapFont();				// default 15pt arial from libgdx JAR file
+		player	= new Player(this,100,200);		// default screen size= (640,480)
+		enemy	= new Player(this,540,200);
+		items.add(new Item(this, 500, 300));	// TEMPORARY: HARD CODED
 		keyBoardListener = new Listener();
 		Gdx.input.setInputProcessor(keyBoardListener);
-		
-		// TEMPORARY
-		items.add(new Character(this, 500, 300));
 	}
 
 	@Override
@@ -86,16 +75,16 @@ public class TSPGame extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		player.update();
 		enemy.update();
-		
-		if(keyBoardListener.keysPressed[Keys.LEFT]) 	{ player.move(-5); }
-		if(keyBoardListener.keysPressed[Keys.RIGHT]) 	{ player.move(5); }
-		if(keyBoardListener.keysPressed[Keys.UP]) 		{ player.y += 6; }
-//		if(keyBoardListener.keysPressed[Keys.DOWN]) 	{ player.y -= 5; }
+
+		if(keyBoardListener.keysPressed[Keys.LEFT]) 	{ player.xMove(-5); }
+		if(keyBoardListener.keysPressed[Keys.RIGHT]) 	{ player.xMove(5); }
+		if(keyBoardListener.keysPressed[Keys.UP]) 		{ player.yMove(5); }
+		if(keyBoardListener.keysPressed[Keys.DOWN]) 	{ player.yMove(-5); }
 		if(keyBoardListener.keysPressed[Keys.SPACE])	{
 			keyBoardListener.keysPressed[Keys.SPACE] = false;	// fires once per press
 			if(ammo > 0) {
 				ammo -= 1;
-				Character bullet = new Character(this,(int)player.x, (int)player.y);
+				Bullet bullet = new Bullet(this,(int)player.x, (int)player.y);
 				bullet.setXVelocity(35);
 				bullet.isBullet = true;
 				bullets.add(bullet);
@@ -104,34 +93,35 @@ public class TSPGame extends ApplicationAdapter {
 
 		// Everything that is drawn to the screen should be between ".begin" and ".end"
 		batch.begin();
-		
-		batch.draw(playerSprite, (int)player.x, (int)player.y);
-		batch.draw(enemySprite, (int)enemy.x, (int)enemy.y);
-		
+
+		player.draw(batch);
+		enemy.draw(batch);
+
+		for(Bullet c : bullets) { c.draw(batch); }
+		for(Block c : blockArr) { c.draw(batch); }
+		for(Item c : items) { c.draw(batch); }
+
 		// bullet management
 		for(int i = 0; i < bullets.size(); i += 1) {
 			bullets.get(i).update();
-			batch.draw(bullet, (int)bullets.get(i).x, (int)bullets.get(i).y);
+
 			if(bullets.get(i).isCollidingWith(enemy)) {
 				enemy.yVelocity = 5;
 			}
 			if(!bullets.get(i).alive) {	// ... check if 'dead'
 				bullets.remove(i);		// ... remove if 'dead'
-				i -= 1;			// prevents the loop from skipping the next bullet
+				i -= 1;					// prevents the loop from skipping the next bullet
 			}
 		}
 		// block management
 		for(int i = 0; i < blockArr.size(); i += 1) {	// for each bullet
-			batch.draw(block, (int)blockArr.get(i).x, (int)blockArr.get(i).y);
-			
-			if(!blockArr.get(i).alive) {					// ... check if 'dead'
-				blockArr.remove(i);						// ... remove if 'dead'
-				i -= 1;			// prevents the loop from skipping the next bullet
+			if(!blockArr.get(i).alive) {	// ... check if 'dead'
+				blockArr.remove(i);			// ... remove if 'dead'
+				i -= 1;						// prevents the loop from skipping the next bullet
 			}
 		}
 		// item management
 		for(int i = 0; i < items.size(); i += 1) {
-			batch.draw(ammoPack, (int)items.get(i).x, (int)items.get(i).y);
 			if(!items.get(i).alive) {
 				items.remove(i);
 				i -= 1;
@@ -139,12 +129,12 @@ public class TSPGame extends ApplicationAdapter {
 		}
 
 		// HUD management
-		batch.draw(overlay,  0,  416);	// must go last, has to display over everything else
+		batch.draw(Textures.HUD,  0,  416);	// must go last, has to display over everything else
 		font.draw(batch,  "Your lives: " + player.lives,  10, 470);
 		for(int i = 0; i < ammo; i += 1) {
-			batch.draw(bullet,  i*7,  416);
+			batch.draw(Textures.BULLET,  i*7,  416);
 		}
-		
+
 		batch.end();
 		// Everything that is drawn to the screen should be between ".begin" and ".end"
 	}

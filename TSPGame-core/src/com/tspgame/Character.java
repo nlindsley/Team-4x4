@@ -8,9 +8,7 @@ public class Character {
 	TSPGame game;	// reference to the "game" itself, allows for reference from any point
 	double x;
 	double y;
-	double yVelocity;
 	double xVelocity;
-	double gravity;
 	boolean alive = true;
 	boolean isBullet;
 	int lives = 3;
@@ -20,9 +18,6 @@ public class Character {
 		this.x = x;
 		this.y = y;
 		this.game = game;
-
-		yVelocity = 0.0;
-	//	gravity = 0.15;
 	}
 
 	void setXVelocity(double v) { xVelocity = v; }	// mainly for bullets
@@ -41,7 +36,7 @@ public class Character {
 	
 	/** Part of collision handling. */
 	public void yMove(int amount) {
-		y += amount;	// allows movement (left-right)
+		y += amount;	// allows movement (up-down)
 
 		for(int i = 0; i < game.blockArr.size(); i += 1) {
 			if(this.isCollidingWith(game.blockArr.get(i))) {
@@ -51,17 +46,19 @@ public class Character {
 		}
 	}
 
-	/** Called hundreds of times per second, updates movement speed. */
+	/** Update all character positions, life, and collisions. */
 	public void update() {
+		if(lives < 1 && !isBullet) {	// kill the player if 0 lives remain
+			lives = 0;
+			alive = false;
+			x = -64;
+			y = 64;
+		}
+		
 		x += xVelocity;
-		yVelocity -= gravity;
-		y += yVelocity;
 
 		for(int i = 0; i < game.blockArr.size(); i += 1) {
 			if(game.blockArr.get(i).isCollidingWith(this)) {
-				y -= yVelocity;
-				yVelocity = 0;
-
 				// removes the bullet when it hits a block
 				if(isBullet) {
 					alive = false;
@@ -70,17 +67,9 @@ public class Character {
 			}
 		}
 		if(y <= 0 && (!isBullet)) {	// stops us from falling through the floor, prevents bullets from respawning
-			if(lives <= 1) {	// kill the player if player touches the ground with 1 life left
-				lives = 0;
-				alive = false;
-			} else {
-				lives -= 1;
-				x = 100;	// move the player off the ground if touched
-				y = 200;
-
-				yVelocity = 0.0;
-				// velocity = -velocity; // causes the player to bounce
-			}
+			lives -= 1;
+			x = 100;	// move the player off the ground if touched
+			y = 200;
 		}
 
 		for(int i = 0; i < game.items.size(); i += 1) {
@@ -97,7 +86,7 @@ public class Character {
 
 	boolean isCollidingWith(Character other) {
 		// Create a bounding rectangle over each character
-		Rectangle thisCharacter = new Rectangle((int)x, (int)y, 32, 32);
+		Rectangle thisCharacter = new Rectangle((int)x, (int)y, 57, 62);
 		Rectangle otherCharacter = new Rectangle((int)other.x, (int)other.y, 32, 32);
 
 		return thisCharacter.overlaps(otherCharacter);

@@ -20,11 +20,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class TSPGame extends ApplicationAdapter {
 	SpriteBatch 	batch;
 	Player			player;
-	Player			enemy;
+	Enemy			enemy;
 	List<Bullet>	bullets		= new ArrayList<Bullet>(); 	// of type character because they have the same traits
 	List<Block>		blockArr	= new ArrayList<Block>();	// an array list allows for multiple on screen
 	List<Background>bgArr		= new ArrayList<Background>();
 	List<Item>		items		= new ArrayList<Item>();	// list of active items
+	String[][]		world		= new String[8][8];
 	Listener		keyBoardListener;
 	int ammo = 10;
 	BitmapFont font;	// pre-made font for libgdx
@@ -54,7 +55,7 @@ public class TSPGame extends ApplicationAdapter {
 						player	= new Player(this,i*32,blockHeight*32);
 					}
 					if(levelGrid[i].equals("e")) {
-						enemy	= new Player(this,i*32,blockHeight*32);
+						enemy	= new Enemy(this,i*32,blockHeight*32);
 					}
 					if(levelGrid[i].equals("i")) {
 						items.add(new Item(this, i*32,blockHeight*32));
@@ -82,6 +83,7 @@ public class TSPGame extends ApplicationAdapter {
 		Gdx.input.setInputProcessor(keyBoardListener);
 	}
 
+	/** gets called hundreds of times per second. Similar to tick or frames. */
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(0, 0, 0, 1);	// r,g,b,alpha (values: 0-1);
@@ -89,17 +91,21 @@ public class TSPGame extends ApplicationAdapter {
 		player.update();
 		enemy.update();
 
+		// Player Management
 		if(player.alive) {
-			if(keyBoardListener.keysPressed[Keys.LEFT]) 	{ player.xMove(-5); }
-			if(keyBoardListener.keysPressed[Keys.RIGHT]) 	{ player.xMove(5); }
-			if(keyBoardListener.keysPressed[Keys.UP]) 		{ player.yMove(5); }
-			if(keyBoardListener.keysPressed[Keys.DOWN]) 	{ player.yMove(-5); }
-			if(keyBoardListener.keysPressed[Keys.SPACE])	{
-				keyBoardListener.keysPressed[Keys.SPACE] = false;	// fires once per press
+			if(keyBoardListener.keysPressed[Keys.LEFT])		{ player.xMove(-5);	player.lastFacing = 0; player.defText = Textures.PLAYER0; }
+			if(keyBoardListener.keysPressed[Keys.RIGHT])	{ player.xMove(5);	player.lastFacing = 2; player.defText = Textures.PLAYER2; }
+			if(keyBoardListener.keysPressed[Keys.UP])		{ player.yMove(5);	player.lastFacing = 3; player.defText = Textures.PLAYER3; }
+			if(keyBoardListener.keysPressed[Keys.DOWN])		{ player.yMove(-5);	player.lastFacing = 1; player.defText = Textures.PLAYER1; }
+			if(keyBoardListener.keysPressed[Keys.Z])		{
+				keyBoardListener.keysPressed[Keys.Z] = false;	// fires once per press
 				if(ammo > 0) {
 					ammo -= 1;
-					Bullet bullet = new Bullet(this,(int)player.x, (int)player.y);
-					bullet.setXVelocity(35);
+					Bullet bullet = new Bullet(this,(int)player.x, (int)player.y+8);
+					if(keyBoardListener.keysPressed[Keys.UP]	||	player.lastFacing == 3)		{ bullet.setYVelocity(15); }
+					if(keyBoardListener.keysPressed[Keys.DOWN]	||	player.lastFacing == 1) 	{ bullet.setYVelocity(-15); }
+					if(keyBoardListener.keysPressed[Keys.LEFT]	||	player.lastFacing == 0) 	{ bullet.setXVelocity(-15); }
+					if(keyBoardListener.keysPressed[Keys.RIGHT]	||	player.lastFacing == 2) 	{ bullet.setXVelocity(15); }
 					bullet.isBullet = true;
 					bullets.add(bullet);
 				}
@@ -121,7 +127,8 @@ public class TSPGame extends ApplicationAdapter {
 			bullets.get(i).update();
 
 			if(bullets.get(i).isCollidingWith(enemy)) {
-				enemy.yMove(5);
+				enemy.lives -= 1;
+				bullets.get(i).alive = false;
 			}
 			if(!bullets.get(i).alive) {	// ... check if 'dead'
 				bullets.remove(i);		// ... remove if 'dead'

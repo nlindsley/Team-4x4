@@ -4,7 +4,7 @@ import com.badlogic.gdx.InputProcessor;
 
 public class Listener implements InputProcessor {
 
-	int numberOfKeys = 100;
+	int numberOfKeys = 256;
 	boolean[] keysPressed = new boolean[numberOfKeys];
 	
 	/** checks to see if a key is pressed. */

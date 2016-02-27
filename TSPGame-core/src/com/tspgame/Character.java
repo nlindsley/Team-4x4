@@ -1,5 +1,6 @@
 package com.tspgame;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -9,9 +10,12 @@ public class Character {
 	double x;
 	double y;
 	double xVelocity;
+	double yVelocity;
 	boolean alive = true;
 	boolean isBullet;
+	boolean isPlayer;
 	int lives = 3;
+	int lastFacing; // 0 is left, 1 is down, 2 is right, 3 is up
 	Texture defText = Textures.DEFAULT;
 
 	public Character(TSPGame game, int x, int y) {
@@ -21,11 +25,17 @@ public class Character {
 	}
 
 	void setXVelocity(double v) { xVelocity = v; }	// mainly for bullets
+	void setYVelocity(double v) { yVelocity = v; }	// mainly for bullets
 
 	/** Part of collision handling. */
 	public void xMove(int amount) {
 		x += amount;	// allows movement (left-right)
 
+		if(this.isCollidingWith(game.enemy) && !isBullet) {
+			x -= 5*amount;
+			game.keyBoardListener.keysPressed[Keys.LEFT] = false;
+			game.keyBoardListener.keysPressed[Keys.RIGHT] = false;
+		}
 		for(int i = 0; i < game.blockArr.size(); i += 1) {
 			if(this.isCollidingWith(game.blockArr.get(i))) {
 				x -= amount;	// move back if touching a block
@@ -38,6 +48,11 @@ public class Character {
 	public void yMove(int amount) {
 		y += amount;	// allows movement (up-down)
 
+		if(this.isCollidingWith(game.enemy) && !isBullet) { 
+			y -= 5*amount;
+			game.keyBoardListener.keysPressed[Keys.UP] = false;
+			game.keyBoardListener.keysPressed[Keys.DOWN] = false;
+		}
 		for(int i = 0; i < game.blockArr.size(); i += 1) {
 			if(this.isCollidingWith(game.blockArr.get(i))) {
 				y -= amount;	// move back if touching a block
@@ -56,6 +71,7 @@ public class Character {
 		}
 		
 		x += xVelocity;
+		y += yVelocity;
 
 		for(int i = 0; i < game.blockArr.size(); i += 1) {
 			if(game.blockArr.get(i).isCollidingWith(this)) {
@@ -66,9 +82,9 @@ public class Character {
 				}
 			}
 		}
-		if(y <= 0 && (!isBullet)) {	// stops us from falling through the floor, prevents bullets from respawning
+		if(y <= 0 && (!isBullet)) {	// stops us from walking off the map, prevents bullets from respawning
 			lives -= 1;
-			x = 100;	// move the player off the ground if touched
+			x = 100;	// move the player back on screen
 			y = 200;
 		}
 
@@ -95,5 +111,6 @@ public class Character {
 	/** draw all the textures. */
 	public void draw(SpriteBatch batch) {
 		batch.draw(defText, (int)x, (int)y);
+		
 	}
 }

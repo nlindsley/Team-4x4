@@ -9,7 +9,7 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Team-4x4's Hack 'n Slash";
 		config.height = 1024;
-		config.width = 2048;
+		config.width = 1024;
 		new LwjglApplication(new TSPGame(), config);
 	}
 }

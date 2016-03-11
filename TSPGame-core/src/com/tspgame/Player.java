@@ -11,4 +11,7 @@ public class Player extends Character {
 		width = 57;
 		height = 60;
 	}
+	
+	int currentRoomX;
+	int currentRoomY;
 }

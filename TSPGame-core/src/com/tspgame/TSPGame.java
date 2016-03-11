@@ -26,21 +26,68 @@ public class TSPGame extends ApplicationAdapter {
 	List<Background>bgArr		= new ArrayList<Background>();
 	List<Item>		items		= new ArrayList<Item>();		// list of active items
 	List<String[][]>levels		= new ArrayList<String[][]>();	// contains all levels for the game
-	String[][]		world		= new String[8][8];				// contains all rooms for the level
+	String[][]		rooms		= new String[8][8];				// contains all rooms for the level
 	Listener		keyBoardListener;
 	int ammo = 10;
 	BitmapFont font;	// pre-made font for libgdx
 	int screenHeight;
 	int screenWidth;
 
-	/** loads the level based on a file input of 0's (air), 1's (blocks), and x's(spawns). */
-	public void loadLevel(String levelxx) {
+	/** Initialize all variables when game starts. */
+	@Override
+	public void create () {		// default screen size= (640,480) change in respective platform project
+		loadLevel("level1.txt");
+		loadRoom("l1r1.txt");
+		player.currentRoomX = 0;	// set player tracking to first room on map (bottom-left corner)
+		player.currentRoomY = 4;
+
+		batch	= new SpriteBatch();
+		font	= new BitmapFont();				// default 15pt arial from libgdx JAR file
+		keyBoardListener = new Listener();
+		Gdx.input.setInputProcessor(keyBoardListener);
+	}
+	
+	/** loads the level based on a file input. */
+	public void loadLevel(String levelx) {
 		File loader;
 		try {
-			loader = new File(levelxx);	// levelXX.txt is found in platform folder (-desktop/-android)
+			loader = new File(levelx);
+			Scanner in = new Scanner(loader);
+
+			int j = 0;
+			while(in.hasNextLine()) {
+				String line = in.nextLine();
+				String[] levelGrid = line.split("	");	// separated by tabs, not spaces
+				
+				for(int i = 0; i < levelGrid.length; i += 1) {
+					if(levelGrid[i].equals("0")) { continue; }
+					else {
+						rooms[i][j] = levelGrid[i];
+					}
+				}
+				j += 1;
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("CUSTOM ERROR: NEEDS A LEVEL FILE");
+		}
+	}
+	
+	/** loads the room based on a file input. */
+	public void loadRoom(String lxrx) {
+		File loader;
+		try {
+			loader = new File(lxrx);// levelXX.txt is found in platform folder (-desktop/-android)
 			Scanner in = new Scanner(loader);
 			int blockHeight = 0;	// file is read in line-by-line, so we'll use a simple counter for height
 									// level will be upside-down from txt file
+
+			// remove everything from the previous level before adding next elements
+			for(int i = 0; i < bgArr.size(); i += 1)	{ bgArr.remove(i);		i -= 1;	}
+			for(int i = 0; i < bullets.size(); i += 1)	{ bullets.remove(i);	i -= 1;	}
+			for(int i = 0; i < blockArr.size(); i += 1)	{ blockArr.remove(i);	i -= 1;	}
+			for(int i = 0; i < enemies.size(); i += 1)	{ enemies.remove(i);	i -= 1;	}
+			for(int i = 0; i < items.size(); i += 1)	{ items.remove(i);		i -= 1;	}
+			
 			while(in.hasNextLine()) {
 				String line = in.nextLine();
 				String[] levelGrid = line.split(" ");	// puts everything in-between white-spaces into an array spot
@@ -78,20 +125,8 @@ public class TSPGame extends ApplicationAdapter {
 			screenHeight = blockHeight;
 			in.close();
 		} catch (FileNotFoundException e) {
-			System.out.println("CUSTOM ERROR: NEEDS A LEVEL FILE");
-			e.printStackTrace();
+			System.out.println("CUSTOM ERROR: NEEDS A ROOM FILE");
 		}
-	}
-
-	/** Initialize all variables when game starts. */
-	@Override
-	public void create () {		// default screen size= (640,480) change in respective platform project
-		loadLevel("l1r4.txt");
-
-		batch	= new SpriteBatch();
-		font	= new BitmapFont();				// default 15pt arial from libgdx JAR file
-		keyBoardListener = new Listener();
-		Gdx.input.setInputProcessor(keyBoardListener);
 	}
 
 	/** gets called hundreds of times per second. Similar to tick or frames. */
@@ -171,10 +206,10 @@ public class TSPGame extends ApplicationAdapter {
 			}
 		}
 		// HUD management
-		batch.draw(Textures.HUD,  0, (screenHeight*32)-64);	// must go last, has to display over everything else
-		font.draw(batch,  "Your lives: " + player.lives,  10, (screenHeight*32)-10);
+		batch.draw(Textures.HUD,  0, (screenHeight*32));	// must go last, has to display over everything else
+		font.draw(batch,  "Your lives: " + player.lives,  10, (screenHeight*32)+48);
 		for(int i = 0; i < ammo; i += 1) {
-			batch.draw(Textures.BULLET,  i*7,  (screenHeight*32)-64);
+			batch.draw(Textures.BULLET,  i*7,  (screenHeight*32));
 		}
 
 		batch.end();

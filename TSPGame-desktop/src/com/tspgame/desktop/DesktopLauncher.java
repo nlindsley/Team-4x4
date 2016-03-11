@@ -8,8 +8,8 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Team-4x4's Hack 'n Slash";
-		config.height = 1024;
-		config.width = 1024;
+		config.height = 576;
+		config.width = 512;
 		new LwjglApplication(new TSPGame(), config);
 	}
 }

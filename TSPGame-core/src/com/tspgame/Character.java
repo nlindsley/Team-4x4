@@ -99,10 +99,23 @@ public class Character {
 		}
 		
 		
-		if((y <= 0 || y >= 1024 || x <= 0 || x >= 1024) && (lives > 0) && (!isBullet)) {	// stops us from walking off the map, prevents bullets from respawning
-			lives -= 1;
-			x = 100;	// move the player back on screen
-			y = 200;
+		if(isPlayer) {	// handles room transitions
+			if(y <= 0) {
+				game.loadRoom(game.rooms[game.player.currentRoomX][++game.player.currentRoomY]);
+				y = 480;	// 512 - 32
+			}
+			if(y >= 512) {
+				game.loadRoom(game.rooms[game.player.currentRoomX][--game.player.currentRoomY]);
+				y = 32;
+			}
+			if(x <= 0) {
+				game.loadRoom(game.rooms[--game.player.currentRoomX][game.player.currentRoomY]);
+				x = 480;	// 512 - 32
+			}
+			if(x >= 512) {
+				game.loadRoom(game.rooms[++game.player.currentRoomX][game.player.currentRoomY]);
+				x = 32;
+			}
 		}
 
 		for(int i = 0; i < game.items.size(); i += 1) {

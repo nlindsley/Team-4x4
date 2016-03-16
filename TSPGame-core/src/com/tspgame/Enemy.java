@@ -1,4 +1,8 @@
 package com.tspgame;
+/**
+ * Class to control enemy characters.
+ *
+ */
 
 public class Enemy extends Character {
 	public Enemy(TSPGame game, int x, int y) {
@@ -16,6 +20,9 @@ public class Enemy extends Character {
 		else 				{ this.lastFacing = 3; defText = Textures.ENEMY3; }
 	}
 	
+	/**
+	 * Turns the enemy around when they run into a wall.
+	 */
 	public void turnEnemy() {
 		if(isEnemy && xPatrol) { // if enemy walks into a block,
 			x -= xVelocity;

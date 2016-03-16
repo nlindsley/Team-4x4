@@ -1,5 +1,10 @@
 package com.tspgame;
 
+/**
+ * Class which creates the player character
+ *
+ */
+
 public class Player extends Character {
 	public Player(TSPGame game, int x, int y) {
 		super(game, x, y);	// Uses Character constructor

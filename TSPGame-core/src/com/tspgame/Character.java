@@ -1,5 +1,9 @@
 package com.tspgame;
 
+/**
+ * This class is the super class for Background, Block, Bullet, Enemy, Item, and Player and defines attributes, movement, and collision.
+ */
+
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -21,17 +25,35 @@ public class Character {
 	int lives;
 	int lastFacing; // 0 is left, 1 is down, 2 is right, 3 is up
 	Texture defText = Textures.DEFAULT;
-
+	
+	/**
+	 * Constructor method for Character.
+	 * @param game
+	 * @param X coordinate the character is being spawned at
+	 * @param Y coordinate the character is being spawned at
+	 */
 	public Character(TSPGame game, int x, int y) {
 		this.x = x;
 		this.y = y;
 		this.game = game;
 	}
-
+	
+	/**
+	 * Controls projectile speed on the X-axis
+	 * @param Speed which the projectile is being set to
+	 */
 	void setXVelocity(double v) { xVelocity = v; }	// mainly for bullets
+	
+	/**
+	 * Controls projectile speed on the Y-axis
+	 * @param Speed which the projectile is being set to
+	 */
 	void setYVelocity(double v) { yVelocity = v; }	// mainly for bullets
 
-	/** Part of collision handling. */
+	/** 
+	 * Part of collision handling. Controls movement on the X-axis 
+	 * @param The amount that the character is moving.
+	 */
 	public void xMove(int amount) {
 		x += amount;	// allows movement (left-right)
 
@@ -50,7 +72,10 @@ public class Character {
 		}
 	}
 	
-	/** Part of collision handling. */
+	/** 
+	 * Part of collision handling. Controls movement on the Y-axis 
+	 * @param The amount that the character is moving.
+	 */
 	public void yMove(int amount) {
 		y += amount;	// allows movement (up-down)
 
@@ -69,7 +94,9 @@ public class Character {
 		}
 	}
 
-	/** Update all character positions, life, and collisions. */
+	/** 
+	 * Updates all character positions, life, and collisions. 
+	 */
 	public void update() {
 		if(lives < 1 && !isBullet) {	// kill the player if 0 lives remain
 			lives = 0;
@@ -131,7 +158,11 @@ public class Character {
 			}
 		}
 	}
-
+	/**
+	 * This class checks if two characters are colliding and returns a boolean value.
+	 * @param The unit possibly being collided with.
+	 * @return True if they have collided; false otherwise.
+	 */
 	boolean isCollidingWith(Character other) {
 		// Create a bounding rectangle over each character
 		Rectangle thisCharacter = new Rectangle((int)x, (int)y, width, height);
@@ -140,7 +171,10 @@ public class Character {
 		return thisCharacter.overlaps(otherCharacter);
 	}
 
-	/** draw all the textures. */
+	/** 
+	 * Draw all the textures. 
+	 * @param The batch used to draw.
+	 */
 	public void draw(SpriteBatch batch) {
 		batch.draw(defText, (int)x, (int)y);
 		

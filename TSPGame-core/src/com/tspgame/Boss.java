@@ -1,15 +1,43 @@
 package com.tspgame;
 
-/**
- * Base Class for bosses. Gives them three more health than super tough enemies.
- *
- */
+public class Boss extends Enemy {
 
-public class Boss extends Enemy{
-
-	public Boss(TSPGame game, int x, int y) {
+	public Boss(TSPGame game, int x, int y, int world) {
 		super(game, x, y);
-		lives = 13;
+		switch (world){
+		case 1:
+			name = "Salae";
+			lives = 13;
+			break;
+		case 2:
+			name = "Keza";
+			lives = 15;
+			break;
+		case 3:
+			name = "Zefin";
+			lives = 17;
+			break;
+		case 4:
+			name = "Marble";
+			lives = 19;
+			break;
+		case 5:
+			name = "Sashen";
+			lives = 17;
+			break;
+		case 6:
+			name = "Blint";
+			lives = 19;
+			break;
+		case 7:
+			name = "Vivian";
+			lives = 22;
+			break;
+		case 8:
+			name = "TDK";
+			lives = 25;
+			break;
+		}
 	}
 
 }

@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class Character {
 	TSPGame game;	// reference to the "game" itself, allows for reference from any point
+	String name;
 	double x;
 	double y;
 	double xVelocity;
@@ -119,10 +120,17 @@ public class Character {
 						}
 					} else {
 						e.turnEnemy();
+	
 					}
 				}
 			}
 			if(game.player.isCollidingWith(e)) { e.turnEnemy(); game.player.lives -= 5;}
+			for(Enemy f: game.enemies){
+				if(e.isCollidingWith(f)){
+					e.turnEnemy();
+					f.turnEnemy();
+				}
+			}
 		}
 		
 		
@@ -167,7 +175,6 @@ public class Character {
 		// Create a bounding rectangle over each character
 		Rectangle thisCharacter = new Rectangle((int)x, (int)y, width, height);
 		Rectangle otherCharacter = new Rectangle((int)other.x, (int)other.y, other.width, other.height);
-
 		return thisCharacter.overlaps(otherCharacter);
 	}
 

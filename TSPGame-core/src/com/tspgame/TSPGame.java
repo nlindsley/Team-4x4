@@ -107,7 +107,7 @@ public class TSPGame extends ApplicationAdapter {
 				String[] levelGrid = line.split(" ");	// puts everything in-between white-spaces into an array spot
 
 				for(int i = 0; i < levelGrid.length; i += 1) {
-					Background grass = new Background(this, i*32, blockHeight*32);
+					Background grass = new Background(this, i*32, blockHeight*32, 1);
 					bgArr.add(grass);
 					if(levelGrid[i].equals("1")) {
 						Block block = new Block(this, i*32, blockHeight*32);
@@ -177,6 +177,11 @@ public class TSPGame extends ApplicationAdapter {
 			if(keyBoardListener.keysPressed[Keys.Z])		{
 				keyBoardListener.keysPressed[Keys.Z] = false;	// fires once per press
 				player.attack();
+			}
+			//X key now controls the inventory. One push advances through the inventory one item at a time.
+			if(keyBoardListener.keysPressed[Keys.X]){
+				keyBoardListener.keysPressed[Keys.X] = false;
+				player.accessInventory();
 			}
 		}
 		

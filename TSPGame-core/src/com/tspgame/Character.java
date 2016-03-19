@@ -1,14 +1,11 @@
 package com.tspgame;
 
-/**
- * This class is the super class for Background, Block, Bullet, Enemy, Item, and Player and defines attributes, movement, and collision.
- */
-
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
+/** This class is the super class for Background, Block, Bullet, Enemy, Item, and Player and defines attributes, movement, and collision. */
 public class Character {
 	TSPGame game;	// reference to the "game" itself, allows for reference from any point
 	String name;
@@ -26,7 +23,7 @@ public class Character {
 	int lives;
 	int lastFacing; // 0 is left, 1 is down, 2 is right, 3 is up
 	Texture defText = Textures.DEFAULT;
-	
+
 	/**
 	 * Constructor method for Character.
 	 * @param game
@@ -38,13 +35,13 @@ public class Character {
 		this.y = y;
 		this.game = game;
 	}
-	
+
 	/**
 	 * Controls projectile speed on the X-axis
 	 * @param Speed which the projectile is being set to
 	 */
 	void setXVelocity(double v) { xVelocity = v; }	// mainly for bullets
-	
+
 	/**
 	 * Controls projectile speed on the Y-axis
 	 * @param Speed which the projectile is being set to
@@ -55,7 +52,7 @@ public class Character {
 	 * Part of collision handling. Controls movement on the X-axis 
 	 * @param The amount that the character is moving.
 	 */
-	public void xMove(int amount) {
+	public void xMove(double amount) {
 		x += amount;	// allows movement (left-right)
 
 		for(Enemy e : game.enemies) {
@@ -72,12 +69,12 @@ public class Character {
 			}
 		}
 	}
-	
+
 	/** 
 	 * Part of collision handling. Controls movement on the Y-axis 
 	 * @param The amount that the character is moving.
 	 */
-	public void yMove(int amount) {
+	public void yMove(double amount) {
 		y += amount;	// allows movement (up-down)
 
 		for(Enemy e : game.enemies) {
@@ -99,37 +96,61 @@ public class Character {
 	 * Updates all character positions, life, and collisions. 
 	 */
 	public void update() {
-		if(lives < 1 && !isBullet) {	// kill the player if 0 lives remain
+		if(game.player.lives <= 0) {	// kill the player if 0 lives remain
 			lives = 0;
 			alive = false;
-			x = -64;
-			y = -64;
+			game.player = null;
+			game.loadRoom("DeadState.txt");
+			game.deadState = true;
 		}
 		
 		x += xVelocity;
 		y += yVelocity;
 
-		for(Enemy e : game.enemies) {
-			for(int i = 0; i < game.blockArr.size(); i += 1) {
-				if(game.blockArr.get(i).isCollidingWith(this)) {
-					// removes the bullet when it hits a block
-					if(isBullet) {
-						alive = false;
-						if(!game.blockArr.get(i).unbreakable) {
-							game.blockArr.get(i).alive = false;
-						}
-					} else {
-						e.turnEnemy();
-	
+		for(Block b : game.blockArr) {		// for each block
+			for(Enemy e : game.enemies) {
+				if(e.isCollidingWith(b)) {	// if enemy touches it
+					e.turnEnemy();			// turn enemy
+				}
+				if(game.player.isCollidingWith(e)) {	// if player touches enemy
+					e.turnEnemy(); 						// turn enemy
+					game.player.lives -= 5; 			// player loses health
+				}
+				for(Enemy f: game.enemies) {	// for every other enemy
+					if(e.isCollidingWith(f) && (!e.equals(f))) {
+						e.turnEnemy();			// turn both enemies
+						f.turnEnemy();
 					}
 				}
 			}
-			if(game.player.isCollidingWith(e)) { e.turnEnemy(); game.player.lives -= 5;}
-			for(Enemy f: game.enemies){
-				if(e.isCollidingWith(f)){
-					e.turnEnemy();
-					f.turnEnemy();
+			if(b.isCollidingWith(this) && isBullet) {	// if bullet touches it
+				this.alive = false;						// kill bullet
+				if(!b.unbreakable) {					// if block is breakable
+					b.alive = false;					// kill block
 				}
+			}
+		}
+		
+		for(Boss b : game.bosses) {
+			// X movement
+			if(b.x - game.player.x >= 10) { // move closer to player
+				if(b.mini) { b.xMove(-1.5); }
+				else { b.xMove(-3); }
+			} else if(b.x - game.player.x <= -10){ // 'else-if' to prevent boss from twitching on approach
+				if(b.mini) { b.xMove(1.5); }
+				else { b.xMove(3); }
+			}
+			// Y movement
+			if(b.y - game.player.y >= 10) { // move closer to player
+				if(b.mini) { b.yMove(-1.5); }
+				else { b.yMove(-3); }
+			} else if(b.y - game.player.y <= -10){ // 'else-if' to prevent boss from twitching on approach
+				if(b.mini) { b.yMove(1.5); }
+				else { b.yMove(3); }
+			}
+			
+			if(b.isCollidingWith(game.player)) {
+				game.player.lives -= 1;
 			}
 		}
 		
@@ -166,6 +187,7 @@ public class Character {
 			}
 		}
 	}
+
 	/**
 	 * This class checks if two characters are colliding and returns a boolean value.
 	 * @param The unit possibly being collided with.
@@ -175,6 +197,7 @@ public class Character {
 		// Create a bounding rectangle over each character
 		Rectangle thisCharacter = new Rectangle((int)x, (int)y, width, height);
 		Rectangle otherCharacter = new Rectangle((int)other.x, (int)other.y, other.width, other.height);
+
 		return thisCharacter.overlaps(otherCharacter);
 	}
 
@@ -184,6 +207,5 @@ public class Character {
 	 */
 	public void draw(SpriteBatch batch) {
 		batch.draw(defText, (int)x, (int)y);
-		
 	}
 }

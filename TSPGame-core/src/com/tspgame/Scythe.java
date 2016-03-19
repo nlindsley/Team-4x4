@@ -2,6 +2,7 @@ package com.tspgame;
 
 public class Scythe extends EquipableItem {
 	Scythe(){
-		addInteraction(new GrassBlock);
+		GrassBlock gblock = new GrassBlock(null,0,0);		// creates a dummy block to cross reference
+		addInteraction(gblock);	// adds dummy block to interaction array
 	}
 }

@@ -20,26 +20,32 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class TSPGame extends ApplicationAdapter {
 	SpriteBatch 	batch;
 	Player			player;
+	String[]		levels;		// contains all levels for the game
+	String[][]		rooms		= new String[8][8];				// contains all rooms for the level
+	List<Boss>		bosses		= new ArrayList<Boss>();
 	List<Enemy>		enemies		= new ArrayList<Enemy>();
 	List<Bullet>	bullets		= new ArrayList<Bullet>(); 		// of type character because they have the same traits
 	List<Block>		blockArr	= new ArrayList<Block>();		// an array list allows for multiple on screen
 	List<Background>bgArr		= new ArrayList<Background>();
 	List<Item>		items		= new ArrayList<Item>();		// list of active items
-	List<String[][]>levels		= new ArrayList<String[][]>();	// contains all levels for the game
-	String[][]		rooms		= new String[8][8];				// contains all rooms for the level
 	Listener		keyBoardListener;
-	int ammo = 10;
-	BitmapFont font;	// pre-made font for libgdx
+	BitmapFont 		font;	// pre-made font for libgdx
+	boolean deadState = false;
+	boolean miniKilled = false;
+	boolean bossKilled = false;
+	int[] startRoom = new int[2];
 	int screenHeight;
 	int screenWidth;
+	int levelNum = 1;
+	int ammo = 10;
 
 	/** Initialize all variables when game starts. */
 	@Override
 	public void create () {		// default screen size= (640,480) change in respective platform project
-		loadLevel("level1.txt");
-		loadRoom("l1r1.txt");
-		player.currentRoomX = 0;	// set player tracking to first room on map (bottom-left corner)
-		player.currentRoomY = 4;
+		levels = new String[] {"", "level1maps", "level2maps", "level3maps", "level4maps", "level5maps", "level6maps", "level7maps", "level8maps"};
+		loadLevel("level1maps/level1.txt");
+		
+		player.isKnight = true;	// TEMPORARY: will eventually have selection screen
 
 		batch	= new SpriteBatch();
 		font	= new BitmapFont();				// default 15pt arial from libgdx JAR file
@@ -64,12 +70,19 @@ public class TSPGame extends ApplicationAdapter {
 					else {
 						rooms[i][j] = levelGrid[i];
 					}
+					if(rooms[i][j].contains("r1.txt")) {
+						startRoom[0] = i;
+						startRoom[1] = j;
+					}
 				}
 				j += 1;
 			}
+			in.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("CUSTOM ERROR: NEEDS A LEVEL FILE");
 		}
+		
+		loadRoom(levels[levelNum] + "/l" + levelNum + "r1.txt");
 	}
 	
 	/** loads the room based on a file input. */
@@ -80,13 +93,14 @@ public class TSPGame extends ApplicationAdapter {
 			Scanner in = new Scanner(loader);
 			int blockHeight = 0;	// file is read in line-by-line, so we'll use a simple counter for height
 									// level will be upside-down from txt file
-
+			
 			// remove everything from the previous level before adding next elements
 			for(int i = 0; i < bgArr.size(); i += 1)	{ bgArr.remove(i);		i -= 1;	}
 			for(int i = 0; i < bullets.size(); i += 1)	{ bullets.remove(i);	i -= 1;	}
 			for(int i = 0; i < blockArr.size(); i += 1)	{ blockArr.remove(i);	i -= 1;	}
 			for(int i = 0; i < enemies.size(); i += 1)	{ enemies.remove(i);	i -= 1;	}
 			for(int i = 0; i < items.size(); i += 1)	{ items.remove(i);		i -= 1;	}
+			for(int i = 0; i < bosses.size(); i += 1)	{ bosses.remove(i);		i -= 1; }
 			
 			while(in.hasNextLine()) {
 				String line = in.nextLine();
@@ -103,7 +117,17 @@ public class TSPGame extends ApplicationAdapter {
 						blockArr.add(block);
 					}
 					if(levelGrid[i].equals("p")) {
-						player	= new Player(this,i*32,blockHeight*32);
+						if(player == null) {
+							player	= new Player(this,i*32,blockHeight*32);
+						}
+						
+						player.currentRoomX = startRoom[0];	// set player tracking to first room on map
+						player.currentRoomY = startRoom[1];
+					}
+					if(levelGrid[i].equals("e")) {
+						enemies.add(0, new Enemy(this,i*32,blockHeight*32));
+						enemies.get(0).setXVelocity(0);
+						enemies.get(0).defText = Textures.ENEMY1;
 					}
 					if(levelGrid[i].equals("x")) {
 						enemies.add(0, new Enemy(this,i*32,blockHeight*32));
@@ -114,6 +138,13 @@ public class TSPGame extends ApplicationAdapter {
 						enemies.add(0, new Enemy(this,i*32,blockHeight*32));
 						enemies.get(0).setYVelocity(1);
 						enemies.get(0).xPatrol = false;
+					}
+					if(levelGrid[i].equals("mb")) {
+						bosses.add(0, new Boss(this,i*32,blockHeight*32));
+						bosses.get(0).mini = true;
+					}
+					if(levelGrid[i].equals("b")) {
+						bosses.add(0, new Boss(this,i*32,blockHeight*32));
 					}
 					if(levelGrid[i].equals("i")) {
 						items.add(new Item(this, i*32,blockHeight*32));
@@ -131,7 +162,7 @@ public class TSPGame extends ApplicationAdapter {
 
 	/** gets called hundreds of times per second. Similar to tick or frames. */
 	@Override
-	public void render () {
+	public void render() {
 		Gdx.gl.glClearColor(0, 0, 0, 1);	// r,g,b,alpha (values: 0-1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		player.update();
@@ -145,16 +176,7 @@ public class TSPGame extends ApplicationAdapter {
 			if(keyBoardListener.keysPressed[Keys.DOWN])		{ player.yMove(-5);	player.lastFacing = 1; player.defText = Textures.PLAYER1; }
 			if(keyBoardListener.keysPressed[Keys.Z])		{
 				keyBoardListener.keysPressed[Keys.Z] = false;	// fires once per press
-				if(ammo > 0) {
-					ammo -= 1;
-					Bullet bullet = new Bullet(this,(int)player.x, (int)player.y+8);
-					if(keyBoardListener.keysPressed[Keys.UP]	||	player.lastFacing == 3)		{ bullet.setYVelocity(15); }
-					if(keyBoardListener.keysPressed[Keys.DOWN]	||	player.lastFacing == 1) 	{ bullet.setYVelocity(-15); }
-					if(keyBoardListener.keysPressed[Keys.LEFT]	||	player.lastFacing == 0) 	{ bullet.setXVelocity(-15); }
-					if(keyBoardListener.keysPressed[Keys.RIGHT]	||	player.lastFacing == 2) 	{ bullet.setXVelocity(15); }
-					bullet.isBullet = true;
-					bullets.add(bullet);
-				}
+				player.attack();
 			}
 		}
 		
@@ -166,6 +188,7 @@ public class TSPGame extends ApplicationAdapter {
 		for(Block b		: blockArr)	{	b.draw(batch); }
 		for(Enemy e		: enemies)	{	e.draw(batch); }
 		for(Item i		: items)	{	i.draw(batch); }
+		for(Boss b		: bosses)	{	b.draw(batch); } 
 		player.draw(batch);
 
 		// bullet management
@@ -201,8 +224,22 @@ public class TSPGame extends ApplicationAdapter {
 		// enemy management
 		for(int i = 0; i < enemies.size(); i += 1) {
 			if(enemies.get(i).lives <= 0) {
+				enemies.get(i).dropItem();
 				enemies.remove(i);
 				i -= 1;
+			}
+		}
+		// boss management
+		for(int i = 0; i < bosses.size(); i += 1) {
+			if(bosses.get(i).lives <= 0) {
+				if(bosses.get(i).mini) { miniKilled = true; }
+				else { bossKilled = true; }
+				bosses.remove(i);
+
+				if(bossKilled && miniKilled) {
+					player = null;	// nulling the player makes respawning in the next floor easier
+					loadLevel(levels[++levelNum] + "/level" + levelNum + ".txt");
+				}
 			}
 		}
 		// HUD management
@@ -212,6 +249,11 @@ public class TSPGame extends ApplicationAdapter {
 			batch.draw(Textures.BULLET,  i*7,  (screenHeight*32));
 		}
 
+		if(deadState) {
+			font.draw(batch, "You have died...\nEnjoy the afterlife", screenWidth*16, screenHeight*20);
+			font.draw(batch, "kill me to restart", screenWidth*4, screenHeight*14);
+			font.draw(batch, "kill me to exit", screenWidth*24, screenHeight*14);
+		}
 		batch.end();
 		// Everything that is drawn to the screen should be between ".begin" and ".end"
 	}

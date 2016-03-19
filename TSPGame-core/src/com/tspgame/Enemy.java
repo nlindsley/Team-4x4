@@ -1,9 +1,6 @@
 package com.tspgame;
-/**
- * Class to control enemy characters.
- *
- */
 
+/** Class to control enemy characters. */
 public class Enemy extends Character {
 	public Enemy(TSPGame game, int x, int y) {
 		super(game, x, y);	// Uses Character constructor
@@ -19,7 +16,7 @@ public class Enemy extends Character {
 		if(this.xPatrol) 	{ this.lastFacing = 2; defText = Textures.ENEMY2; }
 		else 				{ this.lastFacing = 3; defText = Textures.ENEMY3; }
 	}
-	
+
 	/**
 	 * Turns the enemy around when they run into a wall.
 	 */
@@ -34,6 +31,15 @@ public class Enemy extends Character {
 			yVelocity = -yVelocity;
 			if(yVelocity > 0) { this.lastFacing = 3; defText = Textures.ENEMY3; }
 			if(yVelocity < 0) { this.lastFacing = 1; defText = Textures.ENEMY1; }
+		}
+	}
+	
+	public void dropItem() {
+		int chance = (int)Math.round(Math.random()*100);
+		
+		System.out.println("Drop Chance = " + chance);
+		if(chance > 70) {
+			game.items.add(new Item(game, (int)x, (int)y));
 		}
 	}
 }

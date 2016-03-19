@@ -1,10 +1,20 @@
 package com.tspgame;
 
 public class Boss extends Enemy {
+	
+	boolean mini = false;	// Boolean value to determine whether a mini boss or stage boss
+	
+	public Boss(TSPGame game, int x, int y) {
+		super(game, x, y);	// Uses Character constructor
 
-	public Boss(TSPGame game, int x, int y, int world) {
-		super(game, x, y);
-		switch (world){
+		defText = Textures.DEFAULT;	// Overwrites player texture
+		lives = 50;
+		lastFacing = -1;
+		isEnemy = true;
+		width = 57;
+		height = 62;
+
+		switch (game.levelNum){
 		case 1:
 			name = "Salae";
 			lives = 13;
@@ -39,5 +49,4 @@ public class Boss extends Enemy {
 			break;
 		}
 	}
-
 }

@@ -41,4 +41,6 @@ public class Textures {
 	static Texture W7B      = new Texture("World 7 Floor.png");
 	static Texture W8B      = new Texture("World 8 Floor.png");
 	static Texture POISON   = new Texture("Posion.png");
+	static Texture ABYSS    = new Texture("Abyss.png");
+	static Texture BRIDGE   = new Texture("Abyss.png");
 }

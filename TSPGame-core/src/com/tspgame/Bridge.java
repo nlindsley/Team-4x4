@@ -1,0 +1,21 @@
+package com.tspgame;
+
+public class Bridge extends Background {
+	
+	boolean appears = false;
+
+	public Bridge(TSPGame game, int x, int y, int world) {
+		super(game, x, y, world);
+		Texture defText = Textures.BRIDGE;
+	}
+	
+	public void appear(){
+		appears = true;
+	}
+	
+	public boolean isVisisble(){
+		return appears;
+	}
+	
+
+}

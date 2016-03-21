@@ -1,6 +1,5 @@
 package com.tspgame;
 
-
 public interface EquipItem {
 	
 	public boolean getAcquired();

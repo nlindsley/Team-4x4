@@ -55,6 +55,9 @@ public class TSPGame extends ApplicationAdapter {
 	
 	/** loads the level based on a file input. */
 	public void loadLevel(String levelx) {
+		miniKilled = false;
+		bossKilled = false;
+		
 		File loader;
 		try {
 			loader = new File(levelx);

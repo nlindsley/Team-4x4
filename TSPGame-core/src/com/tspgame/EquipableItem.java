@@ -1,12 +1,20 @@
 package com.tspgame;
 
 import java.util.ArrayList;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.graphics.Texture;
 
 public class EquipableItem implements EquipItem {
 	
 	private boolean acquired = false;
 	private int damage = 1;
 	private ArrayList<Block> inter = new ArrayList<Block>();
+	int width;
+	int height;
+	double x;
+	double y;
+	Texture defText;
 
 	@Override
 	public boolean getAcquired() {
@@ -48,6 +56,28 @@ public class EquipableItem implements EquipItem {
 	
 	public int attack(){
 		return damage;
+	}
+	
+
+	/**
+	 * This class checks if two characters are colliding and returns a boolean value.
+	 * @param The unit possibly being collided with.
+	 * @return True if they have collided; false otherwise.
+	 */
+	boolean isCollidingWith(Character other) {
+		// Create a bounding rectangle over each character
+		Rectangle thisCharacter = new Rectangle((int)x, (int)y, width, height);
+		Rectangle otherCharacter = new Rectangle((int)other.x, (int)other.y, other.width, other.height);
+
+		return thisCharacter.overlaps(otherCharacter);
+	}
+
+	/** 
+	 * Draw all the textures. 
+	 * @param The batch used to draw.
+	 */
+	public void draw(SpriteBatch batch) {
+		batch.draw(defText, (int)x, (int)y);
 	}
 
 }

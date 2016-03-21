@@ -34,7 +34,12 @@ public class Player extends Character {
 	 */
 	public void attack() {
 		if(this.isKnight) {
-			
+			EquipableItem sword = inventory.get(0);
+			for(Enemy e : game.enemies) {
+				if(sword.isCollidingWith(e)) {
+					e.lives -= 5;
+				}
+			}
 		} else if(this.isMage) {
 			if(game.ammo > 0) {
 				game.ammo -= 1;

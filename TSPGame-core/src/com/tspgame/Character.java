@@ -1,6 +1,5 @@
 package com.tspgame;
 
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -57,13 +56,12 @@ public class Character {
 
 		for(Enemy e : game.enemies) {
 			if(this.isCollidingWith(e) && !isBullet) {
-				x -= amount;
-				game.keyBoardListener.keysPressed[Keys.LEFT] = false;
-				game.keyBoardListener.keysPressed[Keys.RIGHT] = false;
+				x -= amount;							// move out of invalid space
+				this.knockback(this.lastFacing, 15, 5);	// knockback player and damage
 			}
 		}
-		for(int i = 0; i < game.blockArr.size(); i += 1) {
-			if(this.isCollidingWith(game.blockArr.get(i))) {
+		for(Block b : game.blockArr) {
+			if(this.isCollidingWith(b)) {
 				x -= amount;	// move back if touching a block
 				return;
 			}
@@ -80,12 +78,11 @@ public class Character {
 		for(Enemy e : game.enemies) {
 			if(this.isCollidingWith(e) && !isBullet) { 
 				y -= amount;
-				game.keyBoardListener.keysPressed[Keys.UP] = false;
-				game.keyBoardListener.keysPressed[Keys.DOWN] = false;
+				this.knockback(this.lastFacing, 15, 5);
 			}
 		}
-		for(int i = 0; i < game.blockArr.size(); i += 1) {
-			if(this.isCollidingWith(game.blockArr.get(i))) {
+		for(Block b : game.blockArr) {
+			if(this.isCollidingWith(b)) {
 				y -= amount;	// move back if touching a block
 				return;
 			}
@@ -112,9 +109,9 @@ public class Character {
 				if(e.isCollidingWith(b)) {	// if enemy touches it
 					e.turnEnemy();			// turn enemy
 				}
-				if(game.player.isCollidingWith(e)) {	// if player touches enemy
+				if(e.isCollidingWith(game.player)) {	// if player touches enemy
 					e.turnEnemy(); 						// turn enemy
-					game.player.lives -= 5; 			// player loses health
+					game.player.knockback(e.lastFacing, 15, 5);		// knockback player and damage
 				}
 				for(Enemy f: game.enemies) {	// for every other enemy
 					if(e.isCollidingWith(f) && (!e.equals(f))) {
@@ -123,7 +120,7 @@ public class Character {
 					}
 				}
 			}
-			if(b.isCollidingWith(this) && isBullet) {	// if bullet touches it
+			if(this.isCollidingWith(b) && isBullet) {	// if bullet touches it
 				this.alive = false;						// kill bullet
 				if(!b.unbreakable) {					// if block is breakable
 					b.alive = false;					// kill block
@@ -188,6 +185,41 @@ public class Character {
 		}
 	}
 
+	/**
+	 * Class that moves the character back a given distance if no obstacle is in the way
+	 * @params Int the distance to be knocked backward
+	 */
+	public void knockback(int direction, int amount, int damage) {
+		boolean noBlock = false;
+		boolean noEnemy = false;
+		Rectangle thisCharacter = new Rectangle((int)this.x, (int)this.y, this.width, this.height);
+		Rectangle otherCharacter;
+
+		// check to see if character will get knocked back into a block
+		for(Block b : game.blockArr) {
+			otherCharacter = new Rectangle((int)b.x, (int)b.y, b.width, b.height);
+			
+			noBlock = !thisCharacter.overlaps(otherCharacter);
+			if(!noBlock) { break; }
+		}
+
+		// check to see if character will get knocked back into an enemy
+		for(Enemy e : game.enemies) {
+			if(this.equals(e)) { continue; }
+			otherCharacter = new Rectangle((int)e.x, (int)e.y, e.width, e.height);
+			
+			noEnemy = !thisCharacter.overlaps(otherCharacter);
+			if(!noEnemy) { break; }
+		}
+		
+		if(noBlock && noEnemy) {
+			if(direction == 0) { this.x += amount;	this.lives -= 5; }
+			if(direction == 1) { this.y += amount;	this.lives -= 5; }
+			if(direction == 2) { this.x -= amount;	this.lives -= 5; }
+			if(direction == 3) { this.y -= amount;	this.lives -= 5; }
+		}
+	}
+	
 	/**
 	 * This class checks if two characters are colliding and returns a boolean value.
 	 * @param The unit possibly being collided with.

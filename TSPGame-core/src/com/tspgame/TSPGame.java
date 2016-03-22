@@ -2,6 +2,9 @@ package com.tspgame;
 
 import java.io.*;
 import java.util.*;
+
+import javax.swing.JComboBox.KeySelectionManager;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -165,11 +168,21 @@ public class TSPGame extends ApplicationAdapter {
 
 	/** gets called hundreds of times per second. Similar to tick or frames. */
 	@Override
+	
+	private State state = State.RUN;
 	public void render() {
+		switch(state){
+		
+		case RUN:
 		Gdx.gl.glClearColor(0, 0, 0, 1);	// r,g,b,alpha (values: 0-1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		player.update();
 		for(Enemy e : enemies) { e.update(); }
+		
+		if(keyBoardListener.keysPressed[Keys.G]){
+			state = State.PAUSE;
+			break;
+		}
 
 		// Player Management
 		if(player.alive) {
@@ -264,5 +277,90 @@ public class TSPGame extends ApplicationAdapter {
 		}
 		batch.end();
 		// Everything that is drawn to the screen should be between ".begin" and ".end"
+		case PAUSE:
+			if(keyBoardListener.keysPressed[Keys.G]){
+				state = State.RUN;
+				break;
+			}
+			// Everything that is drawn to the screen should be between ".begin" and ".end"
+			batch.begin();
+
+			for(Background b: bgArr)	{	b.draw(batch); }
+			for(Bullet b	: bullets)	{	b.draw(batch); }
+			for(Block b		: blockArr)	{	b.draw(batch); }
+			for(Enemy e		: enemies)	{	e.draw(batch); }
+			for(Item i		: items)	{	i.draw(batch); }
+			for(Boss b		: bosses)	{	b.draw(batch); } 
+			player.draw(batch);
+
+			// bullet management
+			for(int i = 0; i < bullets.size(); i += 1) {
+				bullets.get(i).update();
+				
+				for(Enemy e : enemies) {
+					if(bullets.get(i).isCollidingWith(e)) {
+						e.lives -= 1;
+						bullets.get(i).alive = false;
+					}
+				}
+				
+				if(!bullets.get(i).alive) {	// ... check if 'dead'
+					bullets.remove(i);		// ... remove if 'dead'
+					i -= 1;					// prevents the loop from skipping the next bullet
+				}
+			}
+			// block management
+			for(int i = 0; i < blockArr.size(); i += 1) {	// for each bullet
+				if(!blockArr.get(i).alive) {	// ... check if 'dead'
+					blockArr.remove(i);			// ... remove if 'dead'
+					i -= 1;						// prevents the loop from skipping the next bullet
+				}
+			}
+			// item management
+			for(int i = 0; i < items.size(); i += 1) {
+				if(!items.get(i).alive) {
+					items.remove(i);
+					i -= 1;
+				}
+			}
+			// enemy management
+			for(int i = 0; i < enemies.size(); i += 1) {
+				if(enemies.get(i).lives <= 0) {
+					enemies.get(i).dropItem();
+					enemies.remove(i);
+					i -= 1;
+				}
+			}
+			// boss management
+			for(int i = 0; i < bosses.size(); i += 1) {
+				if(bosses.get(i).lives <= 0) {
+					if(bosses.get(i).mini) { miniKilled = true; }
+					else { bossKilled = true; }
+					bosses.remove(i);
+
+					if(bossKilled && miniKilled) {
+						player = null;	// nulling the player makes respawning in the next floor easier
+						loadLevel(levels[++levelNum] + "/level" + levelNum + ".txt");
+					}
+				}
+			}
+			// HUD management
+			batch.draw(Textures.HUD,  0, (screenHeight*32));	// must go last, has to display over everything else
+			font.draw(batch,  "Your lives: " + player.lives,  10, (screenHeight*32)+48);
+			for(int i = 0; i < ammo; i += 1) {
+				batch.draw(Textures.BULLET,  i*7,  (screenHeight*32));
+			}
+
+			if(deadState) {
+				font.draw(batch, "You have died...\nEnjoy the afterlife", screenWidth*16, screenHeight*20);
+				font.draw(batch, "kill me to restart", screenWidth*4, screenHeight*14);
+				font.draw(batch, "kill me to exit", screenWidth*24, screenHeight*14);
+			}
+			batch.end();
+		case STOPPED:
+			break;
+		case RESUME:
+			break;
+		}
 	}
 }

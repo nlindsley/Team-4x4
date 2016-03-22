@@ -37,7 +37,7 @@ public class Player extends Character {
 			EquipableItem sword = inventory.get(0);
 			for(Enemy e : game.enemies) {
 				if(sword.isCollidingWith(e)) {
-					e.lives -= 5;
+					e.lives -= sword.getDamage();
 				}
 			}
 		} else if(this.isMage) {

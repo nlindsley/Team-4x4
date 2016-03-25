@@ -6,7 +6,8 @@ public class Bridge extends Background {
 
 	public Bridge(TSPGame game, int x, int y, int world) {
 		super(game, x, y, world);
-		Texture defText = Textures.BRIDGE;
+		
+		defText = Textures.BRIDGE;
 	}
 	
 	public void appear(){
@@ -16,6 +17,4 @@ public class Bridge extends Background {
 	public boolean isVisisble(){
 		return appears;
 	}
-	
-
 }

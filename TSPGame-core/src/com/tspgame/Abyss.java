@@ -1,10 +1,14 @@
 package com.tspgame;
 
+/**
+ * special floor type, made a character to damage player
+ *
+ */
+
 public class Abyss extends Character {
-	
 	public Abyss(TSPGame game, int x, int y) {
 		super(game, x, y);
-		Texture defText = Textures.ABYSS;
+		defText = Textures.ABYSS;
 	}
 	
 	public void xMove(int amount){

@@ -3,11 +3,10 @@ package com.tspgame;
 import java.io.*;
 import java.util.*;
 
-import javax.swing.JComboBox.KeySelectionManager;
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -21,6 +20,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  * @author Ben McWethy
  */
 public class TSPGame extends ApplicationAdapter {
+	
 	SpriteBatch 	batch;
 	Player			player;
 	String[]		levels;		// contains all levels for the game
@@ -33,10 +33,14 @@ public class TSPGame extends ApplicationAdapter {
 	List<Item>		items		= new ArrayList<Item>();		// list of active items
 	Listener		keyBoardListener;
 	BitmapFont 		font;	// pre-made font for libgdx
+
+	private State state = State.RUN;
+	
 	boolean deadState = false;
 	boolean miniKilled = false;
 	boolean bossKilled = false;
-	int[] startRoom = new int[2];
+	
+	int[] startRoom = new int[2];	// startRoom[0] = x coord, startRoom[1] = y coord
 	int screenHeight;
 	int screenWidth;
 	int levelNum = 1;
@@ -48,10 +52,10 @@ public class TSPGame extends ApplicationAdapter {
 		levels = new String[] {"", "level1maps", "level2maps", "level3maps", "level4maps", "level5maps", "level6maps", "level7maps", "level8maps"};
 		loadLevel("level1maps/level1.txt");
 		
-		player.isKnight = true;	// TEMPORARY: will eventually have selection screen
+		player.isMage = true;	// TEMPORARY: will eventually have selection screen
 
 		batch	= new SpriteBatch();
-		font	= new BitmapFont();				// default 15pt arial from libgdx JAR file
+		font	= new BitmapFont();		// default 15pt arial from libgdx JAR file
 		keyBoardListener = new Listener();
 		Gdx.input.setInputProcessor(keyBoardListener);
 	}
@@ -60,6 +64,8 @@ public class TSPGame extends ApplicationAdapter {
 	public void loadLevel(String levelx) {
 		miniKilled = false;
 		bossKilled = false;
+		System.out.println("level " + levelNum);
+		System.out.println("Starting room: " + startRoom[0] + " " + startRoom[1]);
 		
 		File loader;
 		try {
@@ -93,6 +99,7 @@ public class TSPGame extends ApplicationAdapter {
 	
 	/** loads the room based on a file input. */
 	public void loadRoom(String lxrx) {
+		System.out.println(lxrx);
 		File loader;
 		try {
 			loader = new File(lxrx);// levelXX.txt is found in platform folder (-desktop/-android)
@@ -113,7 +120,7 @@ public class TSPGame extends ApplicationAdapter {
 				String[] levelGrid = line.split(" ");	// puts everything in-between white-spaces into an array spot
 
 				for(int i = 0; i < levelGrid.length; i += 1) {
-					Background grass = new Background(this, i*32, blockHeight*32, 1);
+					Background grass = new Background(this, i*32, blockHeight*32, levelNum);
 					bgArr.add(grass);
 					if(levelGrid[i].equals("1")) {
 						Block block = new Block(this, i*32, blockHeight*32);
@@ -146,10 +153,12 @@ public class TSPGame extends ApplicationAdapter {
 						enemies.get(0).xPatrol = false;
 					}
 					if(levelGrid[i].equals("mb")) {
+						if(miniKilled) { continue; }
 						bosses.add(0, new Boss(this,i*32,blockHeight*32));
 						bosses.get(0).mini = true;
 					}
 					if(levelGrid[i].equals("b")) {
+						if(bossKilled) { continue; }
 						bosses.add(0, new Boss(this,i*32,blockHeight*32));
 					}
 					if(levelGrid[i].equals("i")) {
@@ -164,25 +173,19 @@ public class TSPGame extends ApplicationAdapter {
 		} catch (FileNotFoundException e) {
 			System.out.println("CUSTOM ERROR: NEEDS A ROOM FILE");
 		}
+		System.out.println("player in: " + player.currentRoomX + " " + player.currentRoomY);
 	}
 
 	/** gets called hundreds of times per second. Similar to tick or frames. */
 	@Override
-	
-	private State state = State.RUN;
 	public void render() {
 		switch(state){
 		
-		case RUN:
+		case RUN:	// ----------------------------------------------------------------------------------------------------------------
 		Gdx.gl.glClearColor(0, 0, 0, 1);	// r,g,b,alpha (values: 0-1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		player.update();
 		for(Enemy e : enemies) { e.update(); }
-		
-		if(keyBoardListener.keysPressed[Keys.G]){
-			state = State.PAUSE;
-			break;
-		}
 
 		// Player Management
 		if(player.alive) {
@@ -191,6 +194,11 @@ public class TSPGame extends ApplicationAdapter {
 			if(keyBoardListener.keysPressed[Keys.UP])		{ player.yMove(5);	player.lastFacing = 3; player.defText = Textures.PLAYER3; }
 			if(keyBoardListener.keysPressed[Keys.DOWN])		{ player.yMove(-5);	player.lastFacing = 1; player.defText = Textures.PLAYER1; }
 			if(keyBoardListener.keysPressed[Keys.Z])		{
+				batch.begin();
+				
+				batch.draw(player.getSelectedInventory().defText, (float)player.x+32, (float)player.y);
+				
+				batch.end();
 				keyBoardListener.keysPressed[Keys.Z] = false;	// fires once per press
 				player.attack();
 			}
@@ -199,6 +207,15 @@ public class TSPGame extends ApplicationAdapter {
 				keyBoardListener.keysPressed[Keys.X] = false;
 				player.accessInventory();
 			}
+			if(keyBoardListener.keysPressed[Keys.A]){
+				keyBoardListener.keysPressed[Keys.A] = false;
+				state = State.PAUSE;
+				break;
+			}
+			if(keyBoardListener.keysPressed[Keys.ALT_LEFT]) {	// developer only
+				for(Enemy e : enemies)	{ e.lives = 0; }		// developer only
+				for(Boss b : bosses)	{ b.lives = 0; }		// developer only
+			}													// developer only
 		}
 		
 		// Everything that is drawn to the screen should be between ".begin" and ".end"
@@ -263,6 +280,10 @@ public class TSPGame extends ApplicationAdapter {
 				}
 			}
 		}
+		// Inventory management
+		if(keyBoardListener.keysPressed[Keys.Z]) {
+			batch.draw(player.getSelectedInventory().defText, (float)player.x, (float)player.y);
+		}
 		// HUD management
 		batch.draw(Textures.HUD,  0, (screenHeight*32));	// must go last, has to display over everything else
 		font.draw(batch,  "Your lives: " + player.lives,  10, (screenHeight*32)+48);
@@ -277,8 +298,9 @@ public class TSPGame extends ApplicationAdapter {
 		}
 		batch.end();
 		// Everything that is drawn to the screen should be between ".begin" and ".end"
-		case PAUSE:
-			if(keyBoardListener.keysPressed[Keys.G]){
+		case PAUSE:	// ----------------------------------------------------------------------------------------------------------------
+			if(keyBoardListener.keysPressed[Keys.A]){
+				keyBoardListener.keysPressed[Keys.A] = false;
 				state = State.RUN;
 				break;
 			}
@@ -347,14 +369,23 @@ public class TSPGame extends ApplicationAdapter {
 			// HUD management
 			batch.draw(Textures.HUD,  0, (screenHeight*32));	// must go last, has to display over everything else
 			font.draw(batch,  "Your lives: " + player.lives,  10, (screenHeight*32)+48);
+			if(state == State.PAUSE) {
+				font.setColor(Color.ORANGE);
+				font.getData().setScale(3,3);
+				font.draw(batch, "Paused", screenWidth*11, screenHeight*19);
+				font.setColor(Color.WHITE);
+				font.getData().setScale(1,1);
+			}
 			for(int i = 0; i < ammo; i += 1) {
 				batch.draw(Textures.BULLET,  i*7,  (screenHeight*32));
 			}
 
 			if(deadState) {
-				font.draw(batch, "You have died...\nEnjoy the afterlife", screenWidth*16, screenHeight*20);
+				font.setColor(Color.ORANGE);
+				font.draw(batch, "You have died...\nEnjoy the afterlife", (float)player.x-16, (float)player.y+96);
 				font.draw(batch, "kill me to restart", screenWidth*4, screenHeight*14);
 				font.draw(batch, "kill me to exit", screenWidth*24, screenHeight*14);
+				font.setColor(Color.WHITE);
 			}
 			batch.end();
 		case STOPPED:

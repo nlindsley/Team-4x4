@@ -1,10 +1,9 @@
 package com.tspgame;
 
 public class Poison extends Character {
-
 	public Poison(TSPGame game, int x, int y) {
 		super(game, x, y);
-		Texture defText = Textures.POISON;
+		defText = Textures.POISON;
 	}
 	
 	public void xMove(int amount){

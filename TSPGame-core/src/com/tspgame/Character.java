@@ -57,7 +57,7 @@ public class Character {
 		for(Enemy e : game.enemies) {
 			if(this.isCollidingWith(e) && !isBullet) {
 				x -= amount;							// move out of invalid space
-				this.knockback(this.lastFacing, 15, 5);	// knockback player and damage
+				this.knockback(this.lastFacing, 25, 1);	// knockback player and damage
 			}
 		}
 		for(Block b : game.blockArr) {
@@ -78,7 +78,7 @@ public class Character {
 		for(Enemy e : game.enemies) {
 			if(this.isCollidingWith(e) && !isBullet) { 
 				y -= amount;
-				this.knockback(this.lastFacing, 15, 5);
+				this.knockback(this.lastFacing, 25, 1);
 			}
 		}
 		for(Block b : game.blockArr) {
@@ -187,7 +187,7 @@ public class Character {
 
 	/**
 	 * Class that moves the character back a given distance if no obstacle is in the way
-	 * @params Int the distance to be knocked backward
+	 * @params Integer the distance to be knocked backward
 	 */
 	public void knockback(int direction, int amount, int damage) {
 		boolean noBlock = false;
@@ -199,8 +199,10 @@ public class Character {
 		for(Block b : game.blockArr) {
 			otherCharacter = new Rectangle((int)b.x, (int)b.y, b.width, b.height);
 			
-			noBlock = !thisCharacter.overlaps(otherCharacter);
-			if(!noBlock) { break; }
+			if(thisCharacter.overlaps(otherCharacter)) { 
+				noBlock = false; 
+				break;
+			} else { noBlock = true; }
 		}
 
 		// check to see if character will get knocked back into an enemy
@@ -208,15 +210,17 @@ public class Character {
 			if(this.equals(e)) { continue; }
 			otherCharacter = new Rectangle((int)e.x, (int)e.y, e.width, e.height);
 			
-			noEnemy = !thisCharacter.overlaps(otherCharacter);
-			if(!noEnemy) { break; }
+			if(thisCharacter.overlaps(otherCharacter)) { 
+				noEnemy = false; 
+				break;
+			} else { noEnemy = true; }
 		}
 		
 		if(noBlock && noEnemy) {
-			if(direction == 0) { this.x += amount;	this.lives -= 5; }
-			if(direction == 1) { this.y += amount;	this.lives -= 5; }
-			if(direction == 2) { this.x -= amount;	this.lives -= 5; }
-			if(direction == 3) { this.y -= amount;	this.lives -= 5; }
+			if(direction == 0) { this.x += amount;	this.lives -= damage; }
+			if(direction == 1) { this.y += amount;	this.lives -= damage; }
+			if(direction == 2) { this.x -= amount;	this.lives -= damage; }
+			if(direction == 3) { this.y -= amount;	this.lives -= damage; }
 		}
 	}
 	

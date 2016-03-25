@@ -6,7 +6,7 @@ public class Enemy extends Character {
 		super(game, x, y);	// Uses Character constructor
 		
 		defText = Textures.DEFAULT;	// Overwrites player texture
-		lives = 3;
+		lives = 1;
 		lastFacing = -1;
 		isEnemy = true;
 		xPatrol = true;
@@ -37,7 +37,7 @@ public class Enemy extends Character {
 	public void dropItem() {
 		int chance = (int)Math.round(Math.random()*100);
 		
-		System.out.println("Drop Chance = " + chance);
+		//System.out.println("Drop Chance = " + chance);
 		if(chance > 70) {
 			game.items.add(new Item(game, (int)x, (int)y));
 		}

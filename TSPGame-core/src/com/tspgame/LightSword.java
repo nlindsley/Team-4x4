@@ -4,7 +4,8 @@ public class LightSword extends EquipableItem {
 	
 	LightSword(){
 		changeDamage(14);
-		
+
+		name = "Light Sword";
 		defText = Textures.DEFAULT;
 	}
 	

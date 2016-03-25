@@ -18,34 +18,42 @@ public class Boss extends Enemy {
 		case 1:
 			name = "Salae";
 			lives = 13;
+			defText = Textures.PLAYER0;
 			break;
 		case 2:
 			name = "Keza";
 			lives = 15;
+			defText = Textures.PLAYER0;
 			break;
 		case 3:
 			name = "Zefin";
 			lives = 17;
+			defText = Textures.PLAYER0;
 			break;
 		case 4:
 			name = "Marble";
 			lives = 19;
+			defText = Textures.PLAYER0;
 			break;
 		case 5:
 			name = "Sashen";
 			lives = 17;
+			defText = Textures.PLAYER0;
 			break;
 		case 6:
 			name = "Blint";
 			lives = 19;
+			defText = Textures.PLAYER0;
 			break;
 		case 7:
 			name = "Vivian";
 			lives = 22;
+			defText = Textures.PLAYER0;
 			break;
 		case 8:
 			name = "TDK";
 			lives = 25;
+			defText = Textures.PLAYER1;
 			break;
 		}
 	}

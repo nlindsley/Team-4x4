@@ -4,8 +4,9 @@ public class Sword extends EquipableItem {
 	Sword(){
 		this.changeAcquired();
 
-		defText = Textures.DEFAULT;
-		width = 24;
-		height = 8;
+		name = "Sword";
+		defText = Textures.SWORD;
+		width = 96;
+		height = 16;
 	}
 }

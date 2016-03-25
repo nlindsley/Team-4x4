@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class EquipableItem implements EquipItem {
 	
+	String name = "item";
 	private boolean acquired = false;
 	private int damage = 1;
 	private ArrayList<Block> inter = new ArrayList<Block>();
@@ -64,7 +65,7 @@ public class EquipableItem implements EquipItem {
 	 * @param The unit possibly being collided with.
 	 * @return True if they have collided; false otherwise.
 	 */
-	boolean isCollidingWith(Character other) {
+	boolean isCollidingWith(int width, int height, Character other) {
 		// Create a bounding rectangle over each character
 		Rectangle thisCharacter = new Rectangle((int)x, (int)y, width, height);
 		Rectangle otherCharacter = new Rectangle((int)other.x, (int)other.y, other.width, other.height);

@@ -4,7 +4,12 @@ import java.util.ArrayList;
 
 /** Class which creates the player character */
 public class Player extends Character {
-	
+
+	boolean isKnight	= false;
+	boolean isMage		= false;
+	boolean isArcher	= false;
+	int currentRoomX;
+	int currentRoomY;
 	private int spot = 0;
 	private ArrayList<EquipableItem> inventory = new ArrayList<EquipableItem>();
 	private EquipableItem current;
@@ -23,20 +28,57 @@ public class Player extends Character {
 		current = inventory.get(spot);
 	}
 
-	boolean isKnight	= false;
-	boolean isMage		= false;
-	boolean isArcher	= false;
-	int currentRoomX;
-	int currentRoomY;
+	/** 
+	 * Part of collision handling. Controls movement on the X-axis 
+	 * @param The amount that the character is moving.
+	 */
+	public void xMove(double amount) {
+		x += amount;	// allows movement (left-right)
 
+		for(Enemy e : game.enemies) {
+			if(this.isCollidingWith(e) && !isBullet) {
+				x -= amount;							// move out of invalid space
+				this.knockback(this.lastFacing, 25, 1);	// knockback player and damage
+			}
+		}
+		for(Block b : game.blockArr) {
+			if(this.isCollidingWith(b)) {
+				x -= amount;	// move back if touching a block
+				return;
+			}
+		}
+	}
+
+	/** 
+	 * Part of collision handling. Controls movement on the Y-axis 
+	 * @param The amount that the character is moving.
+	 */
+	public void yMove(double amount) {
+		y += amount;	// allows movement (up-down)
+
+		for(Enemy e : game.enemies) {
+			if(this.isCollidingWith(e) && !isBullet) { 
+				y -= amount;
+				this.knockback(this.lastFacing, 25, 1);
+			}
+		}
+		for(Block b : game.blockArr) {
+			if(this.isCollidingWith(b)) {
+				y -= amount;	// move back if touching a block
+				return;
+			}
+		}
+	}
 	/**
 	 * Uses the selected class's attack ability.
 	 */
 	public void attack() {
 		if(this.isKnight) {
 			EquipableItem sword = inventory.get(0);
+			sword.x = this.x;
+			sword.y = this.y;
 			for(Enemy e : game.enemies) {
-				if(sword.isCollidingWith(e)) {
+				if(sword.isCollidingWith(sword.width, sword.height, e)) {
 					e.lives -= sword.getDamage();
 				}
 			}
@@ -63,16 +105,19 @@ public class Player extends Character {
 		spot++;
 		if(spot>6){
 			spot = 0;
-		}
-		else{
+		} else {
 			boolean access = inventory.get(spot).getAcquired();
 			if(access == false){
 				spot = 0;
 			}
 		}
 		current = inventory.get(spot);
+		System.out.printf("selected item %10s\n", current.name);
 	}
-	
+
+	/** Returns the inventory item that is currently selected. */
+	public EquipableItem getSelectedInventory() { return current; }
+
 	/**
 	 * Adds new items the the players' inventory.
 	 */

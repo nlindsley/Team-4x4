@@ -36,6 +36,9 @@ public class TSPGame extends ApplicationAdapter {
 
 	private State state = State.RUN;
 	
+	private int[] highscores = new int[]{0,0,0};
+	int enemiesKilled = 0;
+	
 	boolean deadState = false;
 	boolean miniKilled = false;
 	boolean bossKilled = false;
@@ -265,6 +268,7 @@ public class TSPGame extends ApplicationAdapter {
 				enemies.get(i).dropItem();
 				enemies.remove(i);
 				i -= 1;
+				enemiesKilled++;
 			}
 		}
 		// boss management
@@ -295,6 +299,14 @@ public class TSPGame extends ApplicationAdapter {
 			font.draw(batch, "You have died...\nEnjoy the afterlife", screenWidth*16, screenHeight*20);
 			font.draw(batch, "kill me to restart", screenWidth*4, screenHeight*14);
 			font.draw(batch, "kill me to exit", screenWidth*24, screenHeight*14);
+			for(int i=0;i<3;i++){
+				if(enemiesKilled>highscores[i]){
+					int temp = highscores[i];
+					highscores[i]=enemiesKilled;
+					enemiesKilled = temp;
+				}
+			}
+			enemiesKilled = 0;
 		}
 		batch.end();
 		// Everything that is drawn to the screen should be between ".begin" and ".end"

@@ -1,9 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path=".settings"/>
+	<classpathentry kind="src" path="level5maps"/>
+	<classpathentry kind="src" path="level6maps"/>
+	<classpathentry kind="src" path="level7maps"/>
+	<classpathentry kind="src" path="lib"/>
+	<classpathentry kind="src" path="level3maps"/>
+	<classpathentry kind="src" path="level4maps"/>
+	<classpathentry kind="src" path="level1maps"/>
+	<classpathentry kind="src" path="level2maps"/>
+	<classpathentry kind="src" path="level8maps"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="org.springsource.ide.eclipse.gradle.classpathcontainer"/>
 	<classpathentry kind="src" path="assets"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/gdx-1.9.2.jar"/>
+	<classpathentry kind="lib" path="lib/gdx-backend-lwjgl-1.9.2.jar"/>
+	<classpathentry kind="lib" path="lib/gdx-platform-1.9.2-natives-desktop.jar"/>
+	<classpathentry kind="lib" path="lib/jinput-2.0.5.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl_util-2.9.2.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl-2.9.2.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl-platform-2.9.2-natives-linux.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl-platform-2.9.2-natives-osx.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl-platform-2.9.2-natives-windows.jar"/>
+	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.8.11.2.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/TSPGame-core"/>
+	<classpathentry kind="lib" path="lib/jinput-platform-2.0.5-natives-linux.jar"/>
+	<classpathentry kind="lib" path="lib/jinput-platform-2.0.5-natives-osx.jar"/>
+	<classpathentry kind="lib" path="lib/jinput-platform-2.0.5-natives-windows.jar"/>
+	<classpathentry kind="lib" path="lib/jlayer-1.0.1-gdx.jar"/>
+	<classpathentry kind="lib" path="lib/jorbis-0.0.17.jar"/>
+	<classpathentry kind="lib" path="lib/jutils-1.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

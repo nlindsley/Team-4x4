@@ -248,7 +248,8 @@ public class Primary implements ActionListener{
 		}
 		if(button == tutor){
 			frame.remove(main);
-			//This will launch the game eventually.
+			DesktopLauncher a = new DesktopLauncher();
+			a.run();
 		}
 		if(button == returns1){
 			frame.remove(scores);

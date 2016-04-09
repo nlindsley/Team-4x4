@@ -1,5 +1,6 @@
 package com.tspgame;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -97,6 +98,7 @@ public class Character {
 			lives = 0;
 			alive = false;
 			game.player = null;
+			//Gdx.app.exit();
 			game.loadRoom("DeadState.txt");
 			game.deadState = true;
 		}

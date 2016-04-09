@@ -295,6 +295,7 @@ public class TSPGame extends ApplicationAdapter {
 		}
 
 		if(deadState) {
+			//System.exit(0);
 			font.draw(batch, "You have died...\nEnjoy the afterlife", screenWidth*16, screenHeight*20);
 			font.draw(batch, "kill me to restart", screenWidth*4, screenHeight*14);
 			font.draw(batch, "kill me to exit", screenWidth*24, screenHeight*14);
@@ -397,5 +398,8 @@ public class TSPGame extends ApplicationAdapter {
 		case RESUME:
 			break;
 		}
+	}
+	public int getScore(){
+		return enemiesKilled;
 	}
 }

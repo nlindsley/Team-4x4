@@ -2,14 +2,14 @@ package com.tspgame;
 
 /** Class to control enemy characters. */
 public class Enemy extends Character {
-	public Enemy(TSPGame game, int x, int y) {
+	public Enemy(TSPGame game, int x, int y, boolean xPatrol) {
 		super(game, x, y);	// Uses Character constructor
 		
 		defText = Textures.DEFAULT;	// Overwrites player texture
 		lives = 1;
 		lastFacing = -1;
 		isEnemy = true;
-		xPatrol = true;
+		this.xPatrol = xPatrol;
 		width = 57;
 		height = 62;
 		
@@ -35,7 +35,7 @@ public class Enemy extends Character {
 	}
 	
 	public void dropItem() {
-		int chance = (int)Math.round(Math.random()*100);
+		int chance = ((int)Math.round(Math.random()/5)*100);
 		
 		//System.out.println("Drop Chance = " + chance);
 		if(chance > 70) {

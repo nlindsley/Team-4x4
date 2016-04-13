@@ -1,5 +1,6 @@
-package com.tspgame.desktop;
+package com.tspgame;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DBHookUp {
 	
@@ -41,6 +42,7 @@ public class DBHookUp {
 	 * @return 1 if successful, 0 if not; mostly as a debug.
 	 */
 	public int updateDB(int score){
+		connectDB();
 		try {
 			conn.setAutoCommit(false);
 		} catch (SQLException e) {
@@ -61,6 +63,8 @@ public class DBHookUp {
 		}catch(SQLException ex){
 			ex.printStackTrace();
 		}
+		ensureHighestThree();
+		disconnect();
 		return 1;
 	}
 	
@@ -111,23 +115,24 @@ public class DBHookUp {
 		}
 	}
 	
-	public int[] getScores(){
-		int[] ret = new int[3];
+	public ArrayList<Integer> getScores(){
+		connectDB();
+		ArrayList<Integer> ret = new ArrayList<Integer>();
 		try{
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery("select * from scores order by value desc");
-			int counter = 0;
 			while(rs.next()){
 				int val = rs.getInt(1);
-				ret[counter] = val;
+				ret.add(val);
 			}
 		}catch(SQLException ex){
 			ex.printStackTrace();
 		}
+		disconnect();
 		return ret;
 	}
 	
-	DBHookUp(){
+	public DBHookUp(){
 		this.connectDB();
 		this.create();
 		this.disconnect();
@@ -144,10 +149,10 @@ public class DBHookUp {
 		init.updateDB(0);
 		init.updateDB(0);
 		init.updateDB(0);
-		int [] a = init.getScores();
-		for(int i:a){
-			System.out.println(i);
-		}
+		//int [] a = init.getScores();
+		//for(int i:a){
+		//	System.out.println(i);
+		//}
 		init.disconnect();
 	}
 

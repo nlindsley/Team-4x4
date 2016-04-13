@@ -54,7 +54,7 @@ public class TSPGame extends ApplicationAdapter {
 		levels = new String[] {"", "level1maps", "level2maps", "level3maps", "level4maps", "level5maps", "level6maps", "level7maps", "level8maps"};
 		loadLevel("level1maps/level1.txt");
 		
-		player.isMage = true;	// TEMPORARY: will eventually have selection screen
+		//player.isMage = true;	// TEMPORARY: will eventually have selection screen
 
 		batch	= new SpriteBatch();
 		font	= new BitmapFont();		// default 15pt arial from libgdx JAR file
@@ -140,19 +140,19 @@ public class TSPGame extends ApplicationAdapter {
 						player.currentRoomY = startRoom[1];
 					}
 					if(levelGrid[i].equals("e")) {
-						enemies.add(0, new Enemy(this,i*32,blockHeight*32));
+						enemies.add(0, new Enemy(this,i*32,blockHeight*32, true));
 						enemies.get(0).setXVelocity(0);
 						enemies.get(0).defText = Textures.ENEMY1;
 					}
 					if(levelGrid[i].equals("x")) {
-						enemies.add(0, new Enemy(this,i*32,blockHeight*32));
+						enemies.add(0, new Enemy(this,i*32,blockHeight*32,true));
 						enemies.get(0).setXVelocity(1);
-						enemies.get(0).xPatrol = true;
+						//enemies.get(0).xPatrol = true;
 					}
 					if(levelGrid[i].equals("y")) {
-						enemies.add(0, new Enemy(this,i*32,blockHeight*32));
+						enemies.add(0, new Enemy(this,i*32,blockHeight*32,false));
 						enemies.get(0).setYVelocity(1);
-						enemies.get(0).xPatrol = false;
+						//enemies.get(0).xPatrol = false;
 					}
 					if(levelGrid[i].equals("mb")) {
 						if(miniKilled) { continue; }
@@ -195,6 +195,7 @@ public class TSPGame extends ApplicationAdapter {
 			if(keyBoardListener.keysPressed[Keys.RIGHT])	{ player.xMove(5);	player.lastFacing = 2; player.defText = Textures.PLAYER2; }
 			if(keyBoardListener.keysPressed[Keys.UP])		{ player.yMove(5);	player.lastFacing = 3; player.defText = Textures.PLAYER3; }
 			if(keyBoardListener.keysPressed[Keys.DOWN])		{ player.yMove(-5);	player.lastFacing = 1; player.defText = Textures.PLAYER1; }
+			System.out.println(player.x+","+player.y);
 			if(keyBoardListener.keysPressed[Keys.Z])		{
 				batch.begin();
 				
@@ -202,7 +203,7 @@ public class TSPGame extends ApplicationAdapter {
 				
 				batch.end();
 				keyBoardListener.keysPressed[Keys.Z] = false;	// fires once per press
-				player.attack();
+				player.attack(player.lastFacing);
 			}
 			//X key now controls the inventory. One push advances through the inventory one item at a time.
 			if(keyBoardListener.keysPressed[Keys.X]){
@@ -295,10 +296,12 @@ public class TSPGame extends ApplicationAdapter {
 		}
 
 		if(deadState) {
-			//System.exit(0);
-			font.draw(batch, "You have died...\nEnjoy the afterlife", screenWidth*16, screenHeight*20);
-			font.draw(batch, "kill me to restart", screenWidth*4, screenHeight*14);
-			font.draw(batch, "kill me to exit", screenWidth*24, screenHeight*14);
+			DBHookUp db = new DBHookUp();
+			db.updateDB(enemiesKilled);
+			//font.draw(batch, "You have died...\nEnjoy the afterlife", screenWidth*16, screenHeight*20);
+			//font.draw(batch, "kill me to restart", screenWidth*4, screenHeight*14);
+			//font.draw(batch, "kill me to exit", screenWidth*24, screenHeight*14);
+			Gdx.app.exit();
 			
 		}
 		batch.end();

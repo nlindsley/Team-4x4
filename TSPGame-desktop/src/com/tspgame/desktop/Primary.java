@@ -1,13 +1,12 @@
 package com.tspgame.desktop;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.*;
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import com.tspgame.DBHookUp;
 
 public class Primary implements ActionListener{
 	private JFrame frame;
@@ -154,11 +153,10 @@ public class Primary implements ActionListener{
 		scoresTop.setHorizontalAlignment(JLabel.CENTER);
 		scoresTop.setVerticalAlignment(JLabel.CENTER);
 		JLabel dbScores = new JLabel();
-		db.connectDB();
-		int[] sc = db.getScores();
-		db.disconnect();
-		System.out.println(sc[0]);
-		String actual = String.format("<html><div style=\"width:%dpx;\"><center><font size = \"4\">%s</font></center></div><html>", 100, sc[0]+"<br/>"+sc[1]+"<br/>"+sc[2]+"<br/>");
+		ArrayList<Integer> sc = db.getScores();
+		System.out.println(sc.size());
+		//System.out.println(sc.get(0));
+		String actual = String.format("<html><div style=\"width:%dpx;\"><center><font size = \"4\">%s</font></center></div><html>", 100, sc.get(0)+"<br/>"+sc.get(1)+"<br/>"+sc.get(2)+"<br/>");
 		dbScores.setText(actual);
 		dbScores.setHorizontalAlignment(JLabel.CENTER);
 		dbScores.setVerticalAlignment(JLabel.CENTER);

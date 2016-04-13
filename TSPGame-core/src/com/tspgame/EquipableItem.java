@@ -80,5 +80,9 @@ public class EquipableItem implements EquipItem {
 	public void draw(SpriteBatch batch) {
 		batch.draw(defText, (int)x, (int)y);
 	}
+	
+	public void changeTexture (Texture t){
+		defText = t;
+	}
 
 }

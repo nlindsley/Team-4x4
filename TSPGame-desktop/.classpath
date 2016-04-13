@@ -9,7 +9,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.buildship.core.gradleclasspathcontainer"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.8.11.2.jar"/>
 	<classpathentry kind="lib" path="lib/gdx-1.9.2.jar"/>
 	<classpathentry kind="lib" path="lib/gdx-backend-lwjgl-1.9.2.jar"/>
 	<classpathentry kind="lib" path="lib/gdx-platform-1.9.2-natives-desktop.jar"/>

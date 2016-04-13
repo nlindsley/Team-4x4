@@ -8,7 +8,7 @@ package com.tspgame;
 public class SuperToughEnemy extends Enemy{
 
 	public SuperToughEnemy(TSPGame game, int x, int y) {
-		super(game, x, y);
+		super(game, x, y,true);
 		lives = 10;
 		
 		if(this.xPatrol) 	{ this.lastFacing = 2; defText = Textures.STENEMY2; }

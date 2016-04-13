@@ -77,11 +77,13 @@ public class Player extends Character {
 			EquipableItem sword = inventory.get(0);
 			if(lastFacing==0){
 				sword.changeTexture(Textures.SWORD2);
+				sword.x = this.x-57;
+				sword.y = this.y;
 			}
 			if(lastFacing==1){
 				sword.changeTexture(Textures.SWORD4);
-				sword.x = this.x-32;
-				sword.y = this.y;
+				sword.x = this.x;
+				sword.y = this.y-57;
 			}
 			if(lastFacing==2){
 				sword.changeTexture(Textures.SWORD1);
@@ -90,6 +92,8 @@ public class Player extends Character {
 			}
 			if(lastFacing==3){
 				sword.changeTexture(Textures.SWORD3);
+				sword.x = this.x;
+				sword.y = this.y+57;
 			}
 			
 			

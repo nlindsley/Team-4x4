@@ -1,6 +1,5 @@
 package com.tspgame;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -134,18 +133,18 @@ public class Character {
 			// X movement
 			if(b.x - game.player.x >= 10) { // move closer to player
 				if(b.mini) { b.xMove(-1.5); }
-				else { b.xMove(-3); }
+				else { b.xMove(-2); }
 			} else if(b.x - game.player.x <= -10){ // 'else-if' to prevent boss from twitching on approach
 				if(b.mini) { b.xMove(1.5); }
-				else { b.xMove(3); }
+				else { b.xMove(2); }
 			}
 			// Y movement
 			if(b.y - game.player.y >= 10) { // move closer to player
 				if(b.mini) { b.yMove(-1.5); }
-				else { b.yMove(-3); }
+				else { b.yMove(-2); }
 			} else if(b.y - game.player.y <= -10){ // 'else-if' to prevent boss from twitching on approach
 				if(b.mini) { b.yMove(1.5); }
-				else { b.yMove(3); }
+				else { b.yMove(2); }
 			}
 			
 			if(b.isCollidingWith(game.player)) {

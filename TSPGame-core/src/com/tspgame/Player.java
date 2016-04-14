@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /** Class which creates the player character */
 public class Player extends Character {
 
-	boolean isKnight	= true;
+	boolean isKnight	= false;
 	boolean isMage		= false;
 	boolean isArcher	= false;
 	int currentRoomX;
@@ -72,34 +72,50 @@ public class Player extends Character {
 	/**
 	 * Uses the selected class's attack ability.
 	 */
-	public void attack(int last) {
+	public void attack() {
 		if(this.isKnight) {
 			EquipableItem sword = inventory.get(0);
 			if(lastFacing==0){
-				sword.changeTexture(Textures.SWORD2);
-				sword.x = this.x-57;
-				sword.y = this.y;
+				sword.changeTexture(Textures.SWORD0);
+				sword.x = this.x-47;
+				sword.y = this.y+26;
 			}
 			if(lastFacing==1){
-				sword.changeTexture(Textures.SWORD4);
-				sword.x = this.x;
-				sword.y = this.y-57;
-			}
-			if(lastFacing==2){
 				sword.changeTexture(Textures.SWORD1);
 				sword.x = this.x;
-				sword.y = this.y;
+				sword.y = this.y-38;
+			}
+			if(lastFacing==2){
+				sword.changeTexture(Textures.SWORD2);
+				sword.x = this.x+24;
+				sword.y = this.y+8;
 			}
 			if(lastFacing==3){
 				sword.changeTexture(Textures.SWORD3);
-				sword.x = this.x;
-				sword.y = this.y+57;
+				sword.x = this.x+42;
+				sword.y = this.y+32;
 			}
 			
-			
 			for(Enemy e : game.enemies) {
-				if(sword.isCollidingWith(sword.width, sword.height, e)) {
-					e.lives -= sword.getDamage();
+				if(lastFacing == 0 || lastFacing == 2) {
+					if(sword.isCollidingWith(sword.width, sword.height, e)) {
+						e.lives -= sword.getDamage();
+					}
+				} else {
+					if(sword.isCollidingWith(sword.height, sword.width, e)) {
+						e.lives -= sword.getDamage();
+					}
+				}
+			}
+			for(Boss b : game.bosses) {
+				if(lastFacing == 0 || lastFacing == 2) {
+					if(sword.isCollidingWith(sword.width, sword.height, b)) {
+						b.lives -= sword.getDamage();
+					}
+				} else {
+					if(sword.isCollidingWith(sword.height, sword.width, b)) {
+						b.lives -= sword.getDamage();
+					}
 				}
 			}
 			

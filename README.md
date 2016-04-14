@@ -2,9 +2,10 @@ Version 2.0 This program is a Legend of Zelda style adventure game featuring 3 d
 
 Credits 4 Byte Warrior was produced by Team 4x4 for Kim Tracy's Team Software Product class Spring 2016. Team 4x4 consists of Alex Friebe, Nick Lindsley, Ben McWerthy, and Charlie Heckel.
 
-System Requirements: Desktop Version: A Java compiler. Given the simplistic art and small number of sprites on the screen, the game is not at all system intensive. Run from Eclipse IDE using (instructions here). Android Version: To run the game, Android 4.2.2 or higher is need. Launch from the widget.
+System Requirements: Desktop Version: A Java compiler. Given the simplistic art and small number of sprites on the screen, the game is not at all system intensive. Run from Eclipse IDE using configuration instructions. Android Version: To run the game, Android 4.2.2 or higher is need. Launch from the widget.
 
-Configuration: No configuration is necessary. Simply launch the game via the command line or widget and it will run.
+Configuration: Android: No configuration is necessary. Simply launch the game via widget and it will run.
+               Desktop: Open Eclipse and import the two projects. Open TSPGame-core and right click on the assets folder. Open properties and copy its location. After doing this, right click on TSPGame-Desktop and remove the TSPGame-desktop/assets folder. Close properties and delete the assets folder from TSPGame-desktop. Open properties and click link source. Paste your copied location into the linked folder location and ensure that the folder name that is generated is assets. Click finish. Click apply and then ok. Right click Primary.java and run as a Java application.
 
 Files List:
 Impelemented: Background, Block, Boss, Character, DBHookUp, DBHookUpTest, Enemy, Equipable Item, Item, Listener, Player, State, Sword, Textures, and TSPGame from TSPGame-core and DesktopLauncher and Primary from TSPGame-desktop

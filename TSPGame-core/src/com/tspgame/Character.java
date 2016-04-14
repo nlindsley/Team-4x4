@@ -1,5 +1,6 @@
 package com.tspgame;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -57,7 +58,7 @@ public class Character {
 		for(Enemy e : game.enemies) {
 			if(this.isCollidingWith(e) && !isBullet) {
 				x -= amount;							// move out of invalid space
-				this.knockback(this.lastFacing, 25, 1);	// knockback player and damage
+				this.knockback(this.lastFacing, 10, 1);	// knockback player and damage
 			}
 		}
 		for(Block b : game.blockArr) {
@@ -78,7 +79,7 @@ public class Character {
 		for(Enemy e : game.enemies) {
 			if(this.isCollidingWith(e) && !isBullet) { 
 				y -= amount;
-				this.knockback(this.lastFacing, 25, 1);
+				this.knockback(this.lastFacing, 10, 1);
 			}
 		}
 		for(Block b : game.blockArr) {
@@ -97,6 +98,7 @@ public class Character {
 			lives = 0;
 			alive = false;
 			game.player = null;
+			//Gdx.app.exit();
 			game.loadRoom("DeadState.txt");
 			game.deadState = true;
 		}
@@ -190,6 +192,8 @@ public class Character {
 	 * @params Integer the distance to be knocked backward
 	 */
 	public void knockback(int direction, int amount, int damage) {
+
+		
 		boolean noBlock = false;
 		boolean noEnemy = false;
 		Rectangle thisCharacter = new Rectangle((int)this.x, (int)this.y, this.width, this.height);
@@ -197,7 +201,7 @@ public class Character {
 
 		// check to see if character will get knocked back into a block
 		for(Block b : game.blockArr) {
-			otherCharacter = new Rectangle((int)b.x, (int)b.y, b.width, b.height);
+			otherCharacter = new Rectangle((int)b.x, (int)b.y, b.width+20, b.height+20);
 			
 			if(thisCharacter.overlaps(otherCharacter)) { 
 				noBlock = false; 
@@ -221,6 +225,9 @@ public class Character {
 			if(direction == 1) { this.y += amount;	this.lives -= damage; }
 			if(direction == 2) { this.x -= amount;	this.lives -= damage; }
 			if(direction == 3) { this.y -= amount;	this.lives -= damage; }
+		}
+		else{
+			this.lives -= damage;
 		}
 	}
 	

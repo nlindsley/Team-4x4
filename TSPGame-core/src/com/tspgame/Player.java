@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /** Class which creates the player character */
 public class Player extends Character {
 
-	boolean isKnight	= false;
+	boolean isKnight	= true;
 	boolean isMage		= false;
 	boolean isArcher	= false;
 	int currentRoomX;
@@ -38,7 +38,7 @@ public class Player extends Character {
 		for(Enemy e : game.enemies) {
 			if(this.isCollidingWith(e) && !isBullet) {
 				x -= amount;							// move out of invalid space
-				this.knockback(this.lastFacing, 25, 1);	// knockback player and damage
+				this.knockback(this.lastFacing, 10, 1);	// knockback player and damage
 			}
 		}
 		for(Block b : game.blockArr) {
@@ -59,7 +59,7 @@ public class Player extends Character {
 		for(Enemy e : game.enemies) {
 			if(this.isCollidingWith(e) && !isBullet) { 
 				y -= amount;
-				this.knockback(this.lastFacing, 25, 1);
+				this.knockback(this.lastFacing, 5, 1);
 			}
 		}
 		for(Block b : game.blockArr) {
@@ -72,16 +72,37 @@ public class Player extends Character {
 	/**
 	 * Uses the selected class's attack ability.
 	 */
-	public void attack() {
+	public void attack(int last) {
 		if(this.isKnight) {
 			EquipableItem sword = inventory.get(0);
-			sword.x = this.x;
-			sword.y = this.y;
+			if(lastFacing==0){
+				sword.changeTexture(Textures.SWORD2);
+				sword.x = this.x-57;
+				sword.y = this.y;
+			}
+			if(lastFacing==1){
+				sword.changeTexture(Textures.SWORD4);
+				sword.x = this.x;
+				sword.y = this.y-57;
+			}
+			if(lastFacing==2){
+				sword.changeTexture(Textures.SWORD1);
+				sword.x = this.x;
+				sword.y = this.y;
+			}
+			if(lastFacing==3){
+				sword.changeTexture(Textures.SWORD3);
+				sword.x = this.x;
+				sword.y = this.y+57;
+			}
+			
+			
 			for(Enemy e : game.enemies) {
 				if(sword.isCollidingWith(sword.width, sword.height, e)) {
 					e.lives -= sword.getDamage();
 				}
 			}
+			
 		} else if(this.isMage) {
 			if(game.ammo > 0) {
 				game.ammo -= 1;

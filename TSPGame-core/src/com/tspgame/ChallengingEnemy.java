@@ -8,7 +8,7 @@ package com.tspgame;
 public class ChallengingEnemy extends Enemy {
 
 	public ChallengingEnemy(TSPGame game, int x, int y) {
-		super(game, x, y);
+		super(game, x, y,true);
 		lives = 7;
 		
 		if(this.xPatrol) 	{ this.lastFacing = 2; defText = Textures.CENEMY2; }

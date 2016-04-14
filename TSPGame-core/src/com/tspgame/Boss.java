@@ -5,7 +5,7 @@ public class Boss extends Enemy {
 	boolean mini = false;	// Boolean value to determine whether a mini boss or stage boss
 	
 	public Boss(TSPGame game, int x, int y) {
-		super(game, x, y);	// Uses Character constructor
+		super(game, x, y, true);	// Uses Character constructor
 
 		defText = Textures.DEFAULT;	// Overwrites player texture
 		lives = 50;

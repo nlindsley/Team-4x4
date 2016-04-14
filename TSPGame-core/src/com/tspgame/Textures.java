@@ -20,9 +20,9 @@ public class Textures {
 	static Texture CENEMY3  = new Texture("challengingenemyback.png");
 	static Texture CWBLOCK  = new Texture("rock.png");
 	static Texture DEFAULT	= new Texture("default.png");
-	static Texture ENEMY0	= new Texture("banditfront.png");
+	static Texture ENEMY0	= new Texture("banditleft.png");
 	static Texture ENEMY1	= new Texture("banditfront.png");
-	static Texture ENEMY2	= new Texture("banditback.png");
+	static Texture ENEMY2	= new Texture("banditright.png");
 	static Texture ENEMY3	= new Texture("banditback.png");
 	static Texture GBLOCK   = new Texture("longgrass.png");
 	static Texture HUD		= new Texture("overlay.png");
@@ -35,7 +35,10 @@ public class Textures {
 	static Texture STENEMY1 = new Texture("supertoughenemyfront.png");
 	static Texture STENEMY2 = new Texture("supertoughenemyback.png");
 	static Texture STENEMY3 = new Texture("supertoughenemyback.png");
-	static Texture SWORD	= new Texture("default.png");
+	static Texture SWORD1	= new Texture("swordright.png");
+	static Texture SWORD2   = new Texture("swordleft.png");
+	static Texture SWORD3   = new Texture("swordup.png");
+	static Texture SWORD4   = new Texture("sworddown.png");
 	static Texture W1B		= new Texture("Grass.png");
 	static Texture W2B		= new Texture("default.png");					// default.png
 	static Texture W3B		= new Texture("default.png");					// default.png

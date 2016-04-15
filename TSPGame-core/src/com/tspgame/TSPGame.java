@@ -298,8 +298,8 @@ public class TSPGame extends ApplicationAdapter {
 		}
 		
 		if(deadState) {
-			DBHookUp db = new DBHookUp();
-			db.updateDB(enemiesKilled);
+			//DBHookUp db = new DBHookUp();
+			//db.updateDB(enemiesKilled);
 			//font.draw(batch, "You have died...\nEnjoy the afterlife", screenWidth*16, screenHeight*20);
 			//font.draw(batch, "kill me to restart", screenWidth*4, screenHeight*14);
 			//font.draw(batch, "kill me to exit", screenWidth*24, screenHeight*14);

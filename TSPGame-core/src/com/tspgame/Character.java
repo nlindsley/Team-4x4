@@ -193,19 +193,30 @@ public class Character {
 	public void knockback(int direction, int amount, int damage) {
 
 		
-		boolean noBlock = false;
+		boolean noBlockLeftDown = false;
+		boolean noBlockRightUp = false;
 		boolean noEnemy = false;
 		Rectangle thisCharacter = new Rectangle((int)this.x, (int)this.y, this.width, this.height);
 		Rectangle otherCharacter;
 
 		// check to see if character will get knocked back into a block
 		for(Block b : game.blockArr) {
-			otherCharacter = new Rectangle((int)b.x, (int)b.y, b.width+20, b.height+20);
+			otherCharacter = new Rectangle((int)b.x, (int)b.y, b.width+25, b.height+25);
 			
 			if(thisCharacter.overlaps(otherCharacter)) { 
-				noBlock = false; 
+				noBlockLeftDown = false; 
 				break;
-			} else { noBlock = true; }
+			} else { noBlockLeftDown = true; }
+		}
+		if(noBlockLeftDown==false){
+			for(Block b : game.blockArr) {
+				otherCharacter = new Rectangle((int)b.x-32, (int)b.y-32, b.width+25, b.height+25);
+				
+				if(thisCharacter.overlaps(otherCharacter)) { 
+					noBlockRightUp = false; 
+					break;
+				} else { noBlockRightUp = true; }
+			}
 		}
 
 		// check to see if character will get knocked back into an enemy
@@ -219,7 +230,7 @@ public class Character {
 			} else { noEnemy = true; }
 		}
 		
-		if(noBlock && noEnemy) {
+		if(noBlockLeftDown && noBlockRightUp && noEnemy) {
 			if(direction == 0) { this.x += amount;	this.lives -= damage; }
 			if(direction == 1) { this.y += amount;	this.lives -= damage; }
 			if(direction == 2) { this.x -= amount;	this.lives -= damage; }

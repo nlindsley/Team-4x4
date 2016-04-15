@@ -38,7 +38,7 @@ public class Player extends Character {
 		for(Enemy e : game.enemies) {
 			if(this.isCollidingWith(e) && !isBullet) {
 				x -= amount;							// move out of invalid space
-				this.knockback(this.lastFacing, 10, 1);	// knockback player and damage
+				this.knockback(this.lastFacing, 5, 1);	// knockback player and damage
 			}
 		}
 		for(Block b : game.blockArr) {

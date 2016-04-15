@@ -114,6 +114,9 @@ public class Character {
 					e.turnEnemy(); 						// turn enemy
 					game.player.knockback(e.lastFacing, 15, 5);		// knockback player and damage
 				}
+				if(e.y <= 0 || e.y >= 512 || e.x <= 0 || e.x >= 512) {
+					e.turnEnemy();
+				}
 				for(Enemy f: game.enemies) {	// for every other enemy
 					if(e.isCollidingWith(f) && (!e.equals(f))) {
 						e.turnEnemy();			// turn both enemies
@@ -151,7 +154,6 @@ public class Character {
 				game.player.lives -= 1;
 			}
 		}
-		
 		
 		if(isPlayer) {	// handles room transitions
 			if(y <= 0) {
@@ -192,7 +194,6 @@ public class Character {
 	 */
 	public void knockback(int direction, int amount, int damage) {
 
-		
 		boolean noBlockLeftDown = false;
 		boolean noBlockRightUp = false;
 		boolean noEnemy = false;
@@ -229,7 +230,7 @@ public class Character {
 				break;
 			} else { noEnemy = true; }
 		}
-		
+
 		if(noBlockLeftDown && noBlockRightUp && noEnemy) {
 			if(direction == 0) { this.x += amount;	this.lives -= damage; }
 			if(direction == 1) { this.y += amount;	this.lives -= damage; }

@@ -43,6 +43,7 @@ public class TSPGame extends ApplicationAdapter {
 	boolean bossKilled = false;
 	
 	int[] startRoom = new int[2];	// startRoom[0] = x coord, startRoom[1] = y coord
+	int[] startSpot = new int[2];	// startSport[0] = x coord of startRoom[0]
 	int screenHeight;
 	int screenWidth;
 	int levelNum = 1;
@@ -135,7 +136,8 @@ public class TSPGame extends ApplicationAdapter {
 						if(player == null) {
 							player	= new Player(this,i*32,blockHeight*32);
 						}
-						
+						startSpot[0] = i*32;
+						startSpot[1] = blockHeight*32;
 						player.currentRoomX = startRoom[0];	// set player tracking to first room on map
 						player.currentRoomY = startRoom[1];
 					}
@@ -271,8 +273,10 @@ public class TSPGame extends ApplicationAdapter {
 				bosses.remove(i);
 
 				if(bossKilled && miniKilled) {
-					player = null;	// nulling the player makes respawning in the next floor easier
+					player.lives = 100;
 					loadLevel(levels[++levelNum] + "/level" + levelNum + ".txt");
+					player.x = startSpot[0];
+					player.y = startSpot[1];
 				}
 			}
 		}

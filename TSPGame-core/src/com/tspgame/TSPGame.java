@@ -209,10 +209,10 @@ public class TSPGame extends ApplicationAdapter {
 				state = State.PAUSE;
 				break;
 			}
-			if(keyBoardListener.keysPressed[Keys.ALT_LEFT]) {	// developer only
-				for(Enemy e : enemies)	{ e.lives = 0; }		// developer only
-				for(Boss b : bosses)	{ b.lives = 0; }		// developer only
-			}													// developer only
+			//if(keyBoardListener.keysPressed[Keys.ALT_LEFT]) {	// developer only
+				//for(Enemy e : enemies)	{ e.lives = 0; }		// developer only
+				//for(Boss b : bosses)	{ b.lives = 0; }		// developer only
+			//}													// developer only
 		}
 		
 		// Everything that is drawn to the screen should be between ".begin" and ".end"
